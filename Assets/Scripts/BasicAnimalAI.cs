@@ -9,7 +9,6 @@ public class BasicAnimalAI : MonoBehaviour {
     private NavMeshAgent nav;
     public float bobbingFrequency= 1.0f;
     public float bobbingAmplitude= 1.0f;
-    public float targDistance;
     public GameObject playArea;
 
     // Use this for initialization
@@ -23,8 +22,6 @@ public class BasicAnimalAI : MonoBehaviour {
     void Update()
     {
         nav.baseOffset = bobbingAmplitude * Mathf.Sin(bobbingFrequency * Time.time);
-
-        targDistance = Vector3.Distance(new Vector3(this.transform.position.x, 0, this.transform.position.z), new Vector3(target.x, 0, target.y));
 
         if (GetComponent<SphereCollider>().bounds.Contains(target))
         {

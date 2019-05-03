@@ -14,6 +14,7 @@ namespace UtilityAI
         public Vector3 destinationPos;
         public NavMeshAgent nav;
         public Animator animator;
+
         public override float Evaluate(Agent a)
         {
             return 0.5f;
@@ -27,6 +28,7 @@ namespace UtilityAI
             {
                 destinationPos = RandomNavSphere(transform.position, radius, -1);
                 nav.SetDestination(destinationPos);
+                nav.speed = 3.5f;
                 animator.SetFloat("MoveSpeed", 0.3f);
                 timer = 0;
             }
