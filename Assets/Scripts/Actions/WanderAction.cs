@@ -7,10 +7,13 @@ namespace UtilityAI
 {
     public class WanderAction : Action
     {
-        public float distance = 50;
+        public float radius = 100;
         public float timerLimit = 5;
         public float timer = 0;
-        Vector3 randomDirection;
+        public Vector3 randomDirection;
+        public Vector3 destinationPos;
+        public NavMeshAgent nav;
+        public Animator animator;
         public override float Evaluate(Agent a)
         {
             return 0.5f;
@@ -22,25 +25,34 @@ namespace UtilityAI
 
             if (timer >= timerLimit)
             {
-                randomDirection = UnityEngine.Random.insideUnitSphere * distance;
+                destinationPos = RandomNavSphere(transform.position, radius, -1);
+                nav.SetDestination(destinationPos);
+                animator.SetFloat("MoveSpeed", 0.3f);
+                timer = 0;
             }
-      
-            randomDirection += agent.transform.position;
-
-            UnityEngine.AI.NavMeshHit navHit;
-            UnityEngine.AI.NavMesh.SamplePosition(randomDirection, out navHit, distance, -1);
-
-            agent.gameObject.GetComponent<NavMeshAgent>().SetDestination(navHit.position);
         }
 
         public override void Enter(Agent agent)
         {
-            randomDirection = UnityEngine.Random.insideUnitSphere * distance;
+            nav = agent.gameObject.GetComponent<NavMeshAgent>();
+            animator = agent.gameObject.GetComponent<Animator>();
             timer = 0;
         }
 
         public override void Exit(Agent agent)
         {
+        }
+
+        public Vector3 RandomNavSphere(Vector3 origin, float distance, int layerMask)
+        {
+            randomDirection = Random.insideUnitSphere * distance;
+
+            randomDirection += origin;
+
+            UnityEngine.AI.NavMeshHit navHit;
+            UnityEngine.AI.NavMesh.SamplePosition(randomDirection, out navHit, radius, -1);
+
+            return navHit.position;
         }
     }
 }
