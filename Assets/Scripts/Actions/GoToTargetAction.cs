@@ -5,51 +5,52 @@ using UnityEngine.AI;
 
 namespace UtilityAI
 {
-    public class GoToTargetAction : Action
+    [CreateAssetMenu(fileName = "MovementAction", menuName = "Action/MovementAction/GoToTargetAction", order = 2)]
+    public class GoToTargetAction : MovementAction
     {
+        public string targetTag;
+        private GameObject[] targets;
         public GameObject target;
-        public NavMeshAgent nav;
-        public Animator animator;
         public float maxSpeed = 15.0f;
         public float distance;
+        public float targetDistance = 1000000.0f;
         public float stopDistance = 4.0f;
         public float slowingDistance = 12.0f;
         public float minSpeed = 5.0f;
 
-        public override float Evaluate(Agent a)
+        public override float Evaluate(Agent agent)
         {
             return Input.GetKey(KeyCode.P) ? 1 : 0;
         }
 
         public override void UpdateAction(Agent agent)
         {
-            nav.SetDestination(target.transform.position);
-            nav.speed = 15.0f;
-            animator.SetFloat("MoveSpeed", 5.0f);
+            agent.nav.SetDestination(target.transform.position);
+            agent.nav.speed = 15.0f;
+            agent.animator.SetFloat("MoveSpeed", 5.0f);
 
-            distance = Vector3.Distance(this.transform.position, target.transform.position);
+            distance = Vector3.Distance(agent.transform.position, target.transform.position);
 
             if (distance <= stopDistance)
             {
-                transform.forward = new Vector3(target.transform.position.x - transform.position.x, 0, target.transform.position.z - transform.position.z);
-                animator.SetFloat("MoveSpeed", 0.0f);
-            }   
+                agent.transform.forward = new Vector3(target.transform.position.x - agent.transform.position.x, 0, target.transform.position.z - agent.transform.position.z);
+                agent.animator.SetFloat("MoveSpeed", 0.0f);
+            }
 
-            if (nav.isStopped != true && distance <= slowingDistance)
+            if (agent.nav.isStopped != true && distance <= slowingDistance)
             {
-                if (nav.speed > minSpeed)
-                    nav.speed = nav.speed * Time.deltaTime * maxSpeed;
+                if (agent.nav.speed > minSpeed)
+                    agent.nav.speed = agent.nav.speed * Time.deltaTime * maxSpeed;
                 else
-                    nav.speed = minSpeed;
+                    agent.nav.speed = minSpeed;
 
             }
         }
 
         public override void Enter(Agent agent)
         {
-            nav = agent.gameObject.GetComponent<NavMeshAgent>();
-            animator = agent.gameObject.GetComponent<Animator>();
-            nav.stoppingDistance = stopDistance;
+            
+
         }
 
         public override void Exit(Agent agent)

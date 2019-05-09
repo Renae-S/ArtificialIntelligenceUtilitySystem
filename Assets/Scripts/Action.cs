@@ -4,9 +4,10 @@ using UnityEngine;
 
 namespace UtilityAI
 {
-    public abstract class Action : MonoBehaviour
+    [CreateAssetMenu(fileName = "Action", menuName = "Action")]
+    public abstract class Action : ScriptableObject
     {
-        public abstract float Evaluate(Agent a);
+        public abstract float Evaluate(Agent agent);
         public abstract void UpdateAction(Agent agent);
         public abstract void Enter(Agent agent);
         public abstract void Exit(Agent agent);

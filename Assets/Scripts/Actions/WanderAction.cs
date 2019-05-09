@@ -5,17 +5,16 @@ using UnityEngine.AI;
 
 namespace UtilityAI
 {
-    public class WanderAction : Action
+    [CreateAssetMenu(fileName = "MovementAction", menuName = "Action/MovementAction/WanderAction", order = 2)]
+    public class WanderAction : MovementAction
     {
         public float radius = 100;
         public float timerLimit = 5;
         public float timer = 0;
         public Vector3 randomDirection;
         public Vector3 destinationPos;
-        public NavMeshAgent nav;
-        public Animator animator;
 
-        public override float Evaluate(Agent a)
+        public override float Evaluate(Agent agent)
         {
             return 0.5f;
         }
@@ -26,18 +25,18 @@ namespace UtilityAI
 
             if (timer >= timerLimit)
             {
-                destinationPos = RandomNavSphere(transform.position, radius, -1);
-                nav.SetDestination(destinationPos);
-                nav.speed = 3.5f;
-                animator.SetFloat("MoveSpeed", 0.3f);
+                destinationPos = RandomNavSphere(agent.transform.position, radius, -1);
+                agent.nav.SetDestination(destinationPos);
+                agent.nav.speed = 3.5f;
+                agent.animator.SetFloat("MoveSpeed", 0.3f);
                 timer = 0;
             }
         }
 
         public override void Enter(Agent agent)
         {
-            nav = agent.gameObject.GetComponent<NavMeshAgent>();
-            animator = agent.gameObject.GetComponent<Animator>();
+            agent.nav = agent.gameObject.GetComponent<NavMeshAgent>();
+            agent.animator = agent.gameObject.GetComponent<Animator>();
             timer = 0;
         }
 
