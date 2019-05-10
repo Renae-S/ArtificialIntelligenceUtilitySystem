@@ -8,16 +8,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d5d7f69dcd8b794e966705593284e25, type: 3}
-  m_Name: AllTimes
+  m_Script: {fileID: 11500000, guid: 6f830a9829ea7634d8a4403e3216cc1a, type: 3}
+  m_Name: WanderIncrement
   m_EditorClassIdentifier: 
-  multiplier: -0.005
+  multiplier: 0.01
   needsAffected:
-  - Hydration
-  - Nourishment
-  - Hygiene
-  - Energy
-  changeInNeedUI: 0.4397348
-  sun: {fileID: 0}
-  night: 1
-  day: 1
+  - Entertainment
+  changeInNeedUI: 1
+  action: {fileID: 11400000, guid: e55f4fa8614b39343b90e02a2b747cb3, type: 2}
