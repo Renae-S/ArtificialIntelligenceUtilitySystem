@@ -5,11 +5,11 @@ using UnityEngine.AI;
 
 namespace UtilityAI
 {
+    [CreateAssetMenu(fileName = "Action", menuName = "Action/UseObjectAction", order = 1)]
     public class UseObjectAction : Action
     {
         public Useable target;
         public string animation;
-
 
         public float distance;
 
@@ -24,12 +24,12 @@ namespace UtilityAI
         {
             switch (n)
             {
-                case Agent.Needs.Hydration: return hydration; break;
-                case Agent.Needs.Nourishment: return nourishment; break;
-                case Agent.Needs.BodyTemperature: return bodyTemperature; break;
-                case Agent.Needs.Entertainment: return entertainment; break;
-                case Agent.Needs.Hygiene: return hygiene; break;
-                case Agent.Needs.Energy: return energy; break;
+                case Agent.Needs.Hydration: return hydration; 
+                case Agent.Needs.Nourishment: return nourishment; 
+                case Agent.Needs.BodyTemperature: return bodyTemperature; 
+                case Agent.Needs.Entertainment: return entertainment; 
+                case Agent.Needs.Hygiene: return hygiene; 
+                case Agent.Needs.Energy: return energy; 
             }
             return 0;
         }
@@ -61,7 +61,6 @@ namespace UtilityAI
             // if the agent is too far away move to the target
             if (Vector3.Distance(agent.transform.position, target.transform.position) > target.range)
             {
-
                 float slowingDistance = 12.0f;
                 float minSpeed = 5.0f;
                 float maxSpeed = 15.0f;
@@ -90,6 +89,7 @@ namespace UtilityAI
             else
             {
                 // otherwise play animation and get bonuses
+
             }
         }
 

@@ -5,8 +5,8 @@ using UnityEngine.AI;
 
 namespace UtilityAI
 {
-    [CreateAssetMenu(fileName = "MovementAction", menuName = "Action/MovementAction/WanderAction", order = 2)]
-    public class WanderAction : MovementAction
+    [CreateAssetMenu(fileName = "Action", menuName = "Action/WanderAction", order = 1)]
+    public class WanderAction : Action
     {
         public float radius = 100;
         public float timerLimit = 5;

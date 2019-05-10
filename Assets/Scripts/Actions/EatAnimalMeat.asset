@@ -8,11 +8,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f084b7ccdfea5e45abf7d6725598de7, type: 3}
-  m_Name: Wander
+  m_Script: {fileID: 11500000, guid: 205fcaf89c02a104782413ae735c9313, type: 3}
+  m_Name: EatAnimalMeat
   m_EditorClassIdentifier: 
-  radius: 100
-  timerLimit: 5
-  timer: 0
-  randomDirection: {x: 0, y: 0, z: 0}
-  destinationPos: {x: 0, y: 0, z: 0}
+  target: {fileID: 0}
+  animation: 
+  distance: 0
+  hydration: 0
+  nourishment: 0
+  bodyTemperature: 0
+  entertainment: 0
+  hygiene: 0
+  energy: 0

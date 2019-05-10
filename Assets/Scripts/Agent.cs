@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
+using System;
 
 namespace UtilityAI
 {
@@ -9,8 +11,16 @@ namespace UtilityAI
     {
         // an array of all avaliable actions
         public Action[] actions;
+        // an array of all the conditions that can be met
+        public Condition[] conditions;
+        // an array of all the UI need bars
+        public Image[] bars;
         // the action we're currently carry out
         public Action currentAction;
+        public Text currentActionText;
+        public Dictionary<string, float> needs;
+        public Dictionary<string, Image> needBars;
+        public Light sun;
 
         public enum Needs
         {
@@ -22,39 +32,21 @@ namespace UtilityAI
             Energy,
         };
 
-        public float hydration;
-        public float nourishment;
-        public float bodyTemperature;
-        public float entertainment;
-        public float hygiene;
-        public float energy;
+        private float hydration;
+        private float nourishment;
+        private float bodyTemperature;
+        private float entertainment;
+        private float hygiene;
+        private float energy;
 
         float GetNeed(Needs n)
         {
-            switch (n)
-            {
-                case Needs.Hydration: return hydration; break;
-                case Needs.Nourishment: return nourishment; break;
-                case Needs.BodyTemperature: return bodyTemperature; break;
-                case Needs.Entertainment: return entertainment; break;
-                case Needs.Hygiene: return hygiene; break;
-                case Needs.Energy: return energy; break;
-            }
-            return 0;
+            return needs[n.ToString()];
         }
-
 
         void SetNeed(Needs n, float value)
         {
-            switch (n)
-            {
-                case Needs.Hydration: hydration = value; break;
-                case Needs.Nourishment: nourishment = value; break;
-                case Needs.BodyTemperature: bodyTemperature = value; break;
-                case Needs.Entertainment: entertainment = value; break;
-                case Needs.Hygiene: hygiene = value; break;
-                case Needs.Energy: energy = value; break;
-            }
+            needs[n.ToString()] = value;
         }
 
         public NavMeshAgent nav;
@@ -62,13 +54,34 @@ namespace UtilityAI
 
         private void Start()
         {
+            needs = new Dictionary<string, float>();
+            needBars = new Dictionary<string, Image>();
             nav = GetComponent<NavMeshAgent>();
             animator = GetComponent<Animator>();
+
+            foreach (string needName in Enum.GetNames(typeof(Needs)))
+            {
+                needs.Add(needName, 1);
+            }
+
+            int num = 0;
+            foreach (string needName in Enum.GetNames(typeof(Needs)))
+            {
+                needBars.Add(needName, bars[num]);
+                num++;
+            }
+
+            foreach (Condition condition in conditions)
+            {
+                condition.Awake();
+            }
         }
 
         // Update is called once per frame
         void Update()
         {
+            UpdateNeeds();
+
             // find the best action each frame (TODO - not every frame)
             Action best = GetBestAction();
 
@@ -85,6 +98,8 @@ namespace UtilityAI
             // update the current action
             if (currentAction)
                 currentAction.UpdateAction(this);
+
+            currentActionText.text = currentAction.name;
         }
 
         Action GetBestAction()
@@ -102,6 +117,18 @@ namespace UtilityAI
                 }
             }
             return action;
+        }
+
+        void UpdateNeeds()
+        {
+            foreach (Condition condition in conditions)
+            {
+                if (!condition.CheckCondition(this))
+                    condition.Exit(this);
+
+                if (condition.CheckCondition(this))
+                    condition.UpdateNeedsUI(this);
+            }
         }
     }
 }

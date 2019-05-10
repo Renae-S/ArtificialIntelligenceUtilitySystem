@@ -8,14 +8,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9712cbf3cac242c47b8ab369d3d5c34a, type: 3}
-  m_Name: GoToAxe
+  m_Script: {fileID: 11500000, guid: 7d5d7f69dcd8b794e966705593284e25, type: 3}
+  m_Name: AllTimes
   m_EditorClassIdentifier: 
-  targetTag: Axe
-  target: {fileID: 0}
-  maxSpeed: 15
-  distance: 3.714297
-  targetDistance: 151.69202
-  stopDistance: 4
-  slowingDistance: 12
-  minSpeed: 5
+  multiplier: -0.005
+  needsAffected:
+  - Hydration
+  - Nourishment
+  - Hygiene
+  - Energy
+  changeInNeedUI: 0.4397348
+  sun: {fileID: 0}
+  night: 1
+  day: 1
