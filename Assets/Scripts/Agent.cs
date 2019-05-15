@@ -10,7 +10,7 @@ namespace UtilityAI
     public class Agent : MonoBehaviour
     {
         // an array of all avaliable actions
-        public Action[] actions;
+        public List<Action> actions;
         // an array of all the conditions that can be met
         public Condition[] conditions;
         // an array of all the UI need bars
@@ -18,9 +18,14 @@ namespace UtilityAI
         // the action we're currently carry out
         public Action currentAction;
         public Text currentActionText;
-        public Dictionary<string, float> needs;
+
         public Dictionary<string, Image> needBars;
         public Light sun;
+        private float health;
+        public Image healthBar;
+        float changeInHealth;
+
+        public Useable target; 
 
         public enum Needs
         {
@@ -39,30 +44,70 @@ namespace UtilityAI
         private float hygiene;
         private float energy;
 
-        float GetNeed(Needs n)
-        {
-            return needs[n.ToString()];
-        }
-
-        void SetNeed(Needs n, float value)
-        {
-            needs[n.ToString()] = value;
-        }
 
         public NavMeshAgent nav;
         public Animator animator;
 
+        public float GetNeedValue(Needs n)
+        {
+            switch (n)
+            {
+                case Needs.Hydration: return hydration;
+                case Needs.Nourishment: return nourishment;
+                case Needs.BodyTemperature: return bodyTemperature;
+                case Needs.Entertainment: return entertainment;
+                case Needs.Hygiene: return hygiene;
+                case Needs.Energy: return energy;
+            }
+            return 0;
+        }
+
+        public Needs GetNeed(string n)
+        {
+            switch (n)
+            {
+                case "Hydration": return Needs.Hydration;
+                case "Nourishment": return Needs.Nourishment;
+                case "BodyTemperature": return Needs.BodyTemperature;
+                case "Entertainment": return Needs.Entertainment;
+                case "Hygiene": return Needs.Hygiene;
+                case "Energy": return Needs.Energy;
+            }
+            return 0;
+        }
+
+        public Agent.Needs GetNeed(int n)
+        {
+            switch (n)
+            {
+                case 0: return Needs.Hydration;
+                case 1: return Needs.Nourishment;
+                case 2: return Needs.BodyTemperature;
+                case 3: return Needs.Entertainment;
+                case 4: return Needs.Hygiene;
+                case 5: return Needs.Energy;
+            }
+            return 0;
+        }
+        public void SetNeed(Agent.Needs n, float value)
+        {
+            switch (n)
+            {
+                case Needs.Hydration: hydration = value; break;
+                case Needs.Nourishment: nourishment = value; break;
+                case Needs.BodyTemperature: bodyTemperature = value; break;
+                case Needs.Entertainment: entertainment = value; break;
+                case Needs.Hygiene: hygiene = value; break;
+                case Needs.Energy: energy = value; break;
+            }
+        }
         private void Start()
         {
-            needs = new Dictionary<string, float>();
+            actions = new List<Action>();
             needBars = new Dictionary<string, Image>();
             nav = GetComponent<NavMeshAgent>();
             animator = GetComponent<Animator>();
-
-            foreach (string needName in Enum.GetNames(typeof(Needs)))
-            {
-                needs.Add(needName, 1);
-            }
+            changeInHealth = 1;
 
             int num = 0;
             foreach (string needName in Enum.GetNames(typeof(Needs)))
@@ -81,6 +126,7 @@ namespace UtilityAI
         void Update()
         {
             UpdateNeeds();
+            UpdateHealth();
 
             // find the best action each frame (TODO - not every frame)
             Action best = GetBestAction();
@@ -104,6 +150,24 @@ namespace UtilityAI
 
         Action GetBestAction()
         {
+            // do the physics overlapsphere and check every useable around you
+            // and get its UseObjectAction
+            actions.Clear();
+            float maxRange = 30.0f;
+            Collider[] items = Physics.OverlapSphere(transform.position, maxRange);
+
+            foreach (Collider col in items)
+            {
+                Useable useable = col.GetComponent<Useable>();
+                if (useable)
+                {
+                    if (col.gameObject.tag == "Useable")
+                    {
+                        actions.Add(col.gameObject.GetComponent<Useable>().action);
+                    }
+                }
+            }
+
             Action action = null;
             float bestValue = 0;
 
@@ -128,6 +192,25 @@ namespace UtilityAI
 
                 if (condition.CheckCondition(this))
                     condition.UpdateNeedsUI(this);
+            }
+        }
+
+        void UpdateHealth()
+        {
+            int NumOfLowNeedBars = 0;
+            foreach (Image bar in bars)
+            {
+                if (bar.fillAmount <= 0)
+                    NumOfLowNeedBars++;
+            }
+
+            changeInHealth += (NumOfLowNeedBars * -0.005f) * Time.deltaTime;
+            healthBar.fillAmount = changeInHealth;
+
+            if (changeInHealth <= 1)
+            {
+                if (NumOfLowNeedBars == 0)
+                    changeInHealth += 0.005f * Time.deltaTime;
             }
         }
     }
