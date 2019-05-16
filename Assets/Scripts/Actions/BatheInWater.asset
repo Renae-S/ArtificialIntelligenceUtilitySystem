@@ -11,12 +11,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 205fcaf89c02a104782413ae735c9313, type: 3}
   m_Name: BatheInWater
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  animation: 
-  distance: 0
-  hydration: 0
-  nourishment: 0
-  bodyTemperature: 0
-  entertainment: 0
-  hygiene: 0
-  energy: 0
+  withinRangeOfTarget: 0
+  animation: Idle
+  distance: 1

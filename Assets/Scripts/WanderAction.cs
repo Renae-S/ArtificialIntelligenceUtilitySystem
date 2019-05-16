@@ -16,8 +16,59 @@ namespace UtilityAI
 
         public override float Evaluate(Agent agent)
         {
-            return 0.5f;
+            float urgency = 0;
+            float recovery = 0;
+            float decrement = 0;
+            float evaluationValue = 0;
+
+            // Sum of needs urgency(i) * (recovery(i) * 10 - distance/speed * decrement(i)         
+            for (int i = 0; i < Agent.Needs.GetNames(typeof(Agent.Needs)).Length; i++)
+            {
+                // Calculate urgency
+                Agent.Needs need = agent.GetNeed(i);
+                urgency = (1 - agent.GetNeedValue(need)) * Agent.Needs.GetNames(typeof(Agent.Needs)).Length;
+
+                // Calculate recovery (need gained in ten seconds)
+                foreach (Condition condition in agent.conditions)
+                {
+                    if (condition.CheckCondition(agent))
+                    {
+                        if (condition.GetType() == typeof(ActionCondition))
+                        {
+                            ActionCondition actionCondition = (ActionCondition)condition;
+                            if (actionCondition.action == this)
+                            {
+                                foreach (string needName in actionCondition.needsAffected)
+                                {
+                                    if (agent.GetNeedName(i) == needName)
+                                    {
+                                        if (actionCondition.multiplier < 0)
+                                        {
+                                            recovery = actionCondition.multiplier * 10;
+                                            decrement = 0;
+                                        }
+                                        else if (actionCondition.multiplier > 0)
+                                        {
+                                            recovery = 0;
+                                            decrement = actionCondition.multiplier * 10;
+                                        }
+                                        else
+                                        {
+                                            recovery = 0;
+                                            decrement = 0;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                evaluationValue += urgency * (recovery - decrement);
+            }
+
+            return evaluationValue;
         }
+    
 
         public override void UpdateAction(Agent agent)
         {

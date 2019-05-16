@@ -23,7 +23,7 @@ public class BasicAnimalAI : MonoBehaviour {
     {
         nav.baseOffset = bobbingAmplitude * Mathf.Sin(bobbingFrequency * Time.time);
 
-        if (GetComponent<SphereCollider>().bounds.Contains(target))
+        if (GetComponent<Collider>().bounds.Contains(target))
         {
             target = generatePosition();
         }

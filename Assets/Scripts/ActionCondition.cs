@@ -28,7 +28,10 @@ namespace UtilityAI
                 foreach (string need in needsAffected)
                 {
                     if (agent.needBars.ContainsKey(need))
-                        agent.needBars[need].fillAmount += changeInNeedUI;
+                    {
+                        agent.needBars[need].fillAmount = changeInNeedUI;
+                        agent.SetNeed(agent.GetNeed(need), changeInNeedUI);
+                    }
                 }
             }
         }

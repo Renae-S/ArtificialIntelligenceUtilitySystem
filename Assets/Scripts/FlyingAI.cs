@@ -19,7 +19,7 @@ public class FlyingAI : MonoBehaviour {
     {
         targDistance = Vector3.Distance(new Vector3(this.transform.position.x, 0, this.transform.position.z), new Vector3(target.x, 0, target.y));
 
-        if (GetComponent<SphereCollider>().bounds.Contains(target))
+        if (GetComponent<Collider>().bounds.Contains(target))
         {
             target = generatePosition();
         }
