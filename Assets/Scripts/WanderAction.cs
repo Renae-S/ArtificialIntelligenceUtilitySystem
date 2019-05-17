@@ -33,7 +33,7 @@ namespace UtilityAI
                 {
                     if (condition.CheckCondition(agent))
                     {
-                        if (condition.GetType() == typeof(ActionCondition))
+                        if (condition.GetType() == typeof(WanderAction))
                         {
                             ActionCondition actionCondition = (ActionCondition)condition;
                             if (actionCondition.action == this)

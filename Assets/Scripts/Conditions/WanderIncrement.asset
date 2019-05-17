@@ -11,7 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f830a9829ea7634d8a4403e3216cc1a, type: 3}
   m_Name: WanderIncrement
   m_EditorClassIdentifier: 
-  multiplier: 0.01
+  multiplier: 0.09
   needsAffected:
   - Entertainment
   changeInNeedUI: 1

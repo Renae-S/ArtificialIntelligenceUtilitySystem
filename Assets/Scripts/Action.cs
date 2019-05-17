@@ -8,6 +8,7 @@ namespace UtilityAI
     public abstract class Action : ScriptableObject
     {
         public bool withinRangeOfTarget;
+        public bool commitmentToAction;
 
         public abstract float Evaluate(Agent agent);
         public abstract void UpdateAction(Agent agent);

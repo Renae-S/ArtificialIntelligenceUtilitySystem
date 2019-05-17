@@ -29,8 +29,11 @@ namespace UtilityAI
         public GameObject targetObject = null;
         public Useable targetUseable = null;
 
-        public float actionTimer = 0;
+        public float actionTimerMax = 500.0f;
+        public float actionTimer;
         public GameObject targetLight;
+
+        public float maxRange = 100.0f;
 
         public enum Needs
         {
@@ -62,6 +65,7 @@ namespace UtilityAI
             animator = GetComponent<Animator>();
             changeInHealth = 1;
             best = null;
+            actionTimer = actionTimerMax;
 
             int num = 0;
             foreach (string needName in Enum.GetNames(typeof(Needs)))
@@ -81,18 +85,23 @@ namespace UtilityAI
         {
             UpdateNeeds();
             UpdateHealth();
-            //if (targetObject != null)
-            //    targetLight.transform.position = targetObject.transform.position;
+            if (targetObject != null)
+            {
+                if (currentAction.withinRangeOfTarget)
+                {
+                    if (targetObject.GetComponent<BasicAnimalAI>() != null)
+                        targetObject.GetComponent<BasicAnimalAI>().turnOffMovement = true;
+                }
+                    
+            }
 
-
-
-            if (actionTimer >= 500)
+            if (actionTimer <= 0)
             {
                 // find the best action each frame (TODO - not every frame)
                 best = GetBestAction();
-                actionTimer = 0;
+                actionTimer = actionTimerMax;
             }
-            actionTimer++;
+            actionTimer--;
 
             // if it is different from what we were doing, switch the finite state machine
             if (best != currentAction)
@@ -112,12 +121,14 @@ namespace UtilityAI
                 currentActionText.text = currentAction.name;
         }
 
+        public Action[] actions;
+
         Action GetBestAction()
         {
             // do the physics overlapsphere and check every useable around you
             // and get its UseObjectAction
             actionsOnUseables.Clear();
-            float maxRange = 100.0f;
+
             Collider[] items = Physics.OverlapSphere(transform.position, maxRange);
 
             foreach (Collider col in items)
@@ -132,21 +143,37 @@ namespace UtilityAI
                 }
             }
 
-            Action action = null;
+            Action bestObjectAction = null;
+            Action bestIntrisicAction = null;
+            float intrisicValue = 0;
+            float objectValue = 0;
+
             float bestValue = 0;
+
+            foreach (Action a in actions)
+            {
+                intrisicValue = a.Evaluate(this);
+                if (a == null || intrisicValue > bestValue)
+                {
+                    bestIntrisicAction = a;
+                    bestValue = intrisicValue;
+                }
+            }
 
             foreach (KeyValuePair<GameObject, Action> a in actionsOnUseables)
             {
-                float value = a.Value.Evaluate(this);
-                if (action == null || value > bestValue)
+                objectValue = a.Value.Evaluate(this);
+                if (bestObjectAction == null || objectValue > bestValue)
                 {
-                    action = a.Value;
-                    bestValue = value;
+                    bestObjectAction = a.Value;
+                    bestValue = objectValue;
                     targetObject = a.Key;
                     targetUseable = targetObject.GetComponent<Useable>();
                 }
             }
-            return action;
+
+            
+            return intrisicValue > objectValue ? bestIntrisicAction : bestObjectAction;
         }
 
         void UpdateNeeds()

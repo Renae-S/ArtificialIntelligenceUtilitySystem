@@ -11,8 +11,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f830a9829ea7634d8a4403e3216cc1a, type: 3}
   m_Name: WarmingByFireIncrement
   m_EditorClassIdentifier: 
-  multiplier: 0.05
+  multiplier: 0.1
   needsAffected:
   - BodyTemperature
-  changeInNeedUI: 1
+  changeInNeedUI: 0.2584442
   action: {fileID: 11400000, guid: 553208e27c7ac4b488c685557c5137e3, type: 2}

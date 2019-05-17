@@ -10,6 +10,7 @@ public class BasicAnimalAI : MonoBehaviour {
     public float bobbingFrequency= 1.0f;
     public float bobbingAmplitude= 1.0f;
     public GameObject playArea;
+    public bool turnOffMovement = false;
 
     // Use this for initialization
     void Start()
@@ -21,15 +22,18 @@ public class BasicAnimalAI : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        nav.baseOffset = bobbingAmplitude * Mathf.Sin(bobbingFrequency * Time.time);
-
-        if (GetComponent<Collider>().bounds.Contains(target))
+        if (!turnOffMovement)
         {
-            target = generatePosition();
+            nav.baseOffset = bobbingAmplitude * Mathf.Sin(bobbingFrequency * Time.time);
+
+            if (GetComponent<Collider>().bounds.Contains(target))
+            {
+                target = generatePosition();
+            }
+
+            // Moves the AI towards the target with animation
+            Follow();
         }
-      
-        // Moves the AI towards the target with animation
-        Follow();
     }
 
     // Moves the AI towards the target with animation

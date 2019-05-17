@@ -14,17 +14,30 @@ namespace UtilityAI
 
         public override float Evaluate(Agent agent)
         {
-            float urgency = 0;
-            float recovery = 0;
-            float decrement = 0;
-            float evaluationValue = 0;
+            float finalEvaluation = 0;
 
             // Sum of needs urgency(i) * (recovery(i) * 10 - distance/speed * decrement(i)         
             for (int i = 0; i < Agent.Needs.GetNames(typeof(Agent.Needs)).Length; i++)
             {
+                float urgency = 0;
+                float recovery = 0;
+                float decrement = 0;
+                float evaluationValue = 0;
+
                 // Calculate urgency
                 Agent.Needs need = agent.GetNeed(i);
-                urgency = agent.GetNeedValue(need) * Agent.Needs.GetNames(typeof(Agent.Needs)).Length;
+                if (agent.GetNeedValue(need) <= 0)
+                {
+                    urgency = 100000000000000000;
+                    agent.maxRange = 200;
+                }
+
+
+                if (agent.GetNeedValue(need) >= 1)
+                    urgency = 0;
+
+                if (agent.GetNeedValue(need) > 0 && agent.GetNeedValue(need) < 1)
+                    urgency = (1 - agent.GetNeedValue(need)) * Agent.Needs.GetNames(typeof(Agent.Needs)).Length;
 
                 // Calculate recovery (need gained in ten seconds)
                 foreach (Condition condition in agent.conditions)
@@ -53,15 +66,19 @@ namespace UtilityAI
                                         recovery = 0;
                                         decrement = 0;
                                     }
-                                    evaluationValue += urgency * (recovery - decrement);
                                 }
                             }
                         }
                     }
                 }
+
+                if (commitmentToAction == true)
+                    evaluationValue += 5;
+                evaluationValue = urgency * (recovery - decrement);
+                finalEvaluation += evaluationValue;
             }
 
-            return evaluationValue;
+            return finalEvaluation;
         }
 
         public override void UpdateAction(Agent agent)
@@ -94,10 +111,14 @@ namespace UtilityAI
                 agent.transform.forward = new Vector3(agent.targetObject.transform.position.x - agent.transform.position.x, 0, agent.targetObject.transform.position.z - agent.transform.position.z);
                 agent.nav.speed = 0.1f;
                 agent.currentAction.withinRangeOfTarget = true;
+                commitmentToAction = true;
 
                 if (animation != "Idle")
+                {
+                    //if (agent.GetComponent<Animation>().isPlaying)
                     agent.GetComponent<Animator>().SetTrigger(animation);
-                
+                }
+
                 else
                 {
                     agent.animator.SetFloat("MoveSpeed", 0.0f);
@@ -115,6 +136,7 @@ namespace UtilityAI
             agent.animator = agent.gameObject.GetComponent<Animator>();
             withinRangeOfTarget = false;
             distance = 0;
+            commitmentToAction = false;
         }
 
         public override void Exit(Agent agent)

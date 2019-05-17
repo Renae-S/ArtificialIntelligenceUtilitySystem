@@ -15,7 +15,7 @@ namespace UtilityAI
         {
             if (action == agent.currentAction)
                 return true;
-
+            action.commitmentToAction = false;
             return false;
         }
 
@@ -24,13 +24,28 @@ namespace UtilityAI
         {
             if (agent.currentAction.withinRangeOfTarget)
             {
-                changeInNeedUI += multiplier * Time.deltaTime;
                 foreach (string need in needsAffected)
                 {
+                    changeInNeedUI = agent.needBars[need].fillAmount;
+                    agent.SetNeed(agent.GetNeed(need), changeInNeedUI);
                     if (agent.needBars.ContainsKey(need))
                     {
-                        agent.needBars[need].fillAmount = changeInNeedUI;
-                        agent.SetNeed(agent.GetNeed(need), changeInNeedUI);
+                        if (multiplier > 0 && agent.needBars[need].fillAmount < 1)
+                        {
+                            changeInNeedUI += multiplier * Time.deltaTime;
+                            agent.needBars[need].fillAmount = changeInNeedUI;
+                            agent.SetNeed(agent.GetNeed(need), changeInNeedUI);
+                        }
+                        else if (multiplier < 0 && agent.needBars[need].fillAmount > 0)
+                        {
+                            changeInNeedUI += multiplier * Time.deltaTime;
+                            agent.needBars[need].fillAmount = changeInNeedUI;
+                            agent.SetNeed(agent.GetNeed(need), changeInNeedUI);
+                        }
+                        //if (multiplier > 0 && agent.needBars[need].fillAmount > 0.99f)
+                        //{
+                        //    agent.actionTimer = 0;
+                        //}
                     }
                 }
             }

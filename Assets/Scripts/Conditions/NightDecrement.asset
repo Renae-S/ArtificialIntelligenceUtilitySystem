@@ -11,10 +11,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d5d7f69dcd8b794e966705593284e25, type: 3}
   m_Name: NightDecrement
   m_EditorClassIdentifier: 
-  multiplier: -0.05
+  multiplier: -0.02
   needsAffected:
   - BodyTemperature
-  changeInNeedUI: 1
+  changeInNeedUI: 0.2567454
   sun: {fileID: 0}
   night: 1
   day: 0

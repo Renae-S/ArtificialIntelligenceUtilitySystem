@@ -14,5 +14,5 @@ MonoBehaviour:
   multiplier: 0.05
   needsAffected:
   - Nourishment
-  changeInNeedUI: 1
+  changeInNeedUI: 0.690976
   action: {fileID: 11400000, guid: b1c8a2ec696bf394f963aa58b486a104, type: 2}

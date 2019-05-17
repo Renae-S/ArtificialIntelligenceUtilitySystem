@@ -8,11 +8,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f830a9829ea7634d8a4403e3216cc1a, type: 3}
-  m_Name: EatAppleIncrementNourishment
+  m_Script: {fileID: 11500000, guid: 7d5d7f69dcd8b794e966705593284e25, type: 3}
+  m_Name: DayIncrement
   m_EditorClassIdentifier: 
-  multiplier: 0.025
+  multiplier: 0.015
   needsAffected:
-  - Nourishment
-  changeInNeedUI: 1
-  action: {fileID: 11400000, guid: 3ade79f1a657df04ead72c3a30b3cacc, type: 2}
+  - BodyTemperature
+  changeInNeedUI: 1.0002341
+  sun: {fileID: 0}
+  night: 0
+  day: 1

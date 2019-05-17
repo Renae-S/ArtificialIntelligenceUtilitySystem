@@ -8,6 +8,6 @@ public class SunRotation : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        transform.Rotate(new Vector3(0.1f, 0, 0));
+        transform.Rotate(new Vector3(0.05f, 0, 0));
     }
 }

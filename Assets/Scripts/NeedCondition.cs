@@ -30,12 +30,14 @@ namespace UtilityAI
 
             // Update is called once per frame
             public override void UpdateNeedsUI(Agent agent)
-            {
-                changeInNeedUI += multiplier * Time.deltaTime;
+            {          
                 foreach (string need in needsAffected)
                 {
+                    changeInNeedUI = agent.needBars[need].fillAmount;
+                    agent.SetNeed(agent.GetNeed(need), changeInNeedUI);
                     if (agent.needBars.ContainsKey(need))
                     {
+                        changeInNeedUI += multiplier * Time.deltaTime;
                         agent.needBars[need].fillAmount = changeInNeedUI;
                         agent.SetNeed(agent.GetNeed(need), changeInNeedUI);
                     }
