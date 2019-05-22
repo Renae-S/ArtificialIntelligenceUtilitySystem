@@ -109,14 +109,14 @@ namespace UtilityAI
             {
                 // otherwise play animation and get bonuses
                 agent.transform.forward = new Vector3(agent.targetObject.transform.position.x - agent.transform.position.x, 0, agent.targetObject.transform.position.z - agent.transform.position.z);
-                agent.nav.speed = 0.1f;
                 agent.currentAction.withinRangeOfTarget = true;
                 commitmentToAction = true;
+                agent.nav.velocity = Vector3.zero;
 
                 if (animation != "Idle")
                 {
-                    //if (agent.GetComponent<Animation>().isPlaying)
-                    agent.GetComponent<Animator>().SetTrigger(animation);
+                    if (!agent.GetComponent<Animator>().GetCurrentAnimatorStateInfo(1).IsName(animation))
+                        agent.GetComponent<Animator>().SetTrigger(animation);
                 }
 
                 else

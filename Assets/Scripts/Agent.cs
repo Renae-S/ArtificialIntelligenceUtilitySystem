@@ -11,6 +11,8 @@ namespace UtilityAI
     {
         // an array of all avaliable actions
         public Dictionary<GameObject, Action> actionsOnUseables;
+        public Action[] intrinsicActions;
+
         // an array of all the conditions that can be met
         public Condition[] conditions;
         // an array of all the UI need bars
@@ -65,7 +67,7 @@ namespace UtilityAI
             animator = GetComponent<Animator>();
             changeInHealth = 1;
             best = null;
-            actionTimer = actionTimerMax;
+            actionTimer = 0;
 
             int num = 0;
             foreach (string needName in Enum.GetNames(typeof(Needs)))
@@ -78,6 +80,7 @@ namespace UtilityAI
             {
                 condition.Awake();
             }
+            animator.SetTrigger("Wave");
         }
 
         // Update is called once per frame
@@ -121,8 +124,6 @@ namespace UtilityAI
                 currentActionText.text = currentAction.name;
         }
 
-        public Action[] actions;
-
         Action GetBestAction()
         {
             // do the physics overlapsphere and check every useable around you
@@ -144,19 +145,19 @@ namespace UtilityAI
             }
 
             Action bestObjectAction = null;
-            Action bestIntrisicAction = null;
-            float intrisicValue = 0;
+            Action bestIntrinsicAction = null;
+            float intrinsicValue = 0;
             float objectValue = 0;
 
             float bestValue = 0;
 
-            foreach (Action a in actions)
+            foreach (Action intrinsicAction in intrinsicActions)
             {
-                intrisicValue = a.Evaluate(this);
-                if (a == null || intrisicValue > bestValue)
+                intrinsicValue = intrinsicAction.Evaluate(this);
+                if (intrinsicAction == null || intrinsicValue > bestValue)
                 {
-                    bestIntrisicAction = a;
-                    bestValue = intrisicValue;
+                    bestIntrinsicAction = intrinsicAction;
+                    bestValue = intrinsicValue;
                 }
             }
 
@@ -173,7 +174,7 @@ namespace UtilityAI
             }
 
             
-            return intrisicValue > objectValue ? bestIntrisicAction : bestObjectAction;
+            return intrinsicValue > objectValue ? bestIntrinsicAction : bestObjectAction;
         }
 
         void UpdateNeeds()

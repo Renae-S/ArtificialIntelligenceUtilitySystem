@@ -16,62 +16,79 @@ namespace UtilityAI
 
         public override float Evaluate(Agent agent)
         {
-            float urgency = 0;
-            float recovery = 0;
-            float decrement = 0;
-            float evaluationValue = 0;
+            float finalEvaluation = 0;
 
             // Sum of needs urgency(i) * (recovery(i) * 10 - distance/speed * decrement(i)         
             for (int i = 0; i < Agent.Needs.GetNames(typeof(Agent.Needs)).Length; i++)
             {
+                float urgency = 0;
+                float recovery = 0;
+                float decrement = 0;
+                float evaluationValue = 0;
+
                 // Calculate urgency
                 Agent.Needs need = agent.GetNeed(i);
-                urgency = (1 - agent.GetNeedValue(need)) * Agent.Needs.GetNames(typeof(Agent.Needs)).Length;
+                if (agent.GetNeedValue(need) <= 0)
+                {
+                    urgency = 100000000000000000;
+                    agent.maxRange = 200;
+                }
+
+                if (agent.GetNeedValue(need) >= 1)
+                    urgency = 0;
+
+                if (agent.GetNeedValue(need) > 0 && agent.GetNeedValue(need) < 1)
+                    urgency = (1 - agent.GetNeedValue(need)) * Agent.Needs.GetNames(typeof(Agent.Needs)).Length;
 
                 // Calculate recovery (need gained in ten seconds)
                 foreach (Condition condition in agent.conditions)
                 {
-                    if (condition.CheckCondition(agent))
+                    if (condition.GetType() == typeof(ActionCondition))
                     {
-                        if (condition.GetType() == typeof(WanderAction))
+                        ActionCondition actionCondition = (ActionCondition)condition;
+                        if (actionCondition.action == this)
                         {
-                            ActionCondition actionCondition = (ActionCondition)condition;
-                            if (actionCondition.action == this)
+                            foreach (string needName in actionCondition.needsAffected)
                             {
-                                foreach (string needName in actionCondition.needsAffected)
+                                if (agent.GetNeedName(i) == needName)
                                 {
-                                    if (agent.GetNeedName(i) == needName)
+                                    if (actionCondition.multiplier > 0)
                                     {
-                                        if (actionCondition.multiplier < 0)
-                                        {
-                                            recovery = actionCondition.multiplier * 10;
-                                            decrement = 0;
-                                        }
-                                        else if (actionCondition.multiplier > 0)
-                                        {
-                                            recovery = 0;
-                                            decrement = actionCondition.multiplier * 10;
-                                        }
-                                        else
-                                        {
-                                            recovery = 0;
-                                            decrement = 0;
-                                        }
+                                        recovery = actionCondition.multiplier;
+                                        decrement = 0;
+                                    }
+                                    else if (actionCondition.multiplier < 0)
+                                    {
+                                        recovery = 0;
+                                        decrement = actionCondition.multiplier;
+                                    }
+                                    else
+                                    {
+                                        recovery = 0;
+                                        decrement = 0;
                                     }
                                 }
                             }
                         }
                     }
                 }
-                evaluationValue += urgency * (recovery - decrement);
-            }
 
-            return evaluationValue;
+                if (commitmentToAction == true)
+                    evaluationValue += 5;
+                evaluationValue = urgency * (recovery - decrement);
+                finalEvaluation += evaluationValue;
+            }
+            return finalEvaluation;
         }
     
 
         public override void UpdateAction(Agent agent)
         {
+            if (!agent.GetComponent<Animator>().GetCurrentAnimatorStateInfo(1).IsName("Idle"))
+            {
+                withinRangeOfTarget = true;
+            }
+
             timer += Time.deltaTime;
 
             if (timer >= timerLimit)

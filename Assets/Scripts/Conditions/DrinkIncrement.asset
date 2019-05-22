@@ -11,8 +11,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f830a9829ea7634d8a4403e3216cc1a, type: 3}
   m_Name: DrinkIncrement
   m_EditorClassIdentifier: 
-  multiplier: 0.05
+  multiplier: 0.08
   needsAffected:
   - Hydration
-  changeInNeedUI: 0.28737968
+  changeInNeedUI: 0.29224026
   action: {fileID: 11400000, guid: 424b7088277b85f4092b0bfb5d4c30df, type: 2}
