@@ -9,8 +9,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 205fcaf89c02a104782413ae735c9313, type: 3}
-  m_Name: WarmByFire
+  m_Name: Eat Animal Meat
   m_EditorClassIdentifier: 
   withinRangeOfTarget: 0
-  animation: Idle
-  distance: 0
+  commitmentToAction: 0
+  animation: Pickup

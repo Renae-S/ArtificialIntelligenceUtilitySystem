@@ -9,10 +9,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f830a9829ea7634d8a4403e3216cc1a, type: 3}
-  m_Name: BathingDecrementEntertainment
+  m_Name: EatMeatIncrementNourishment
   m_EditorClassIdentifier: 
-  multiplier: -0.025
+  multiplier: 0.05
   needsAffected:
-  - Entertainment
-  changeInNeedUI: 0.2563426
-  action: {fileID: 11400000, guid: 528d01f36ba1a11408f1ce649a8a47c9, type: 2}
+  - Nourishment
+  changeInNeedUI: 1
+  action: {fileID: 11400000, guid: b1c8a2ec696bf394f963aa58b486a104, type: 2}

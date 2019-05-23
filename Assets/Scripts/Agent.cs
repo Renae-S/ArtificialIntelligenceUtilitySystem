@@ -9,34 +9,7 @@ namespace UtilityAI
 {
     public class Agent : MonoBehaviour
     {
-        // an array of all avaliable actions
-        public Dictionary<GameObject, Action> actionsOnUseables;
-        public Action[] intrinsicActions;
-
-        // an array of all the conditions that can be met
-        public Condition[] conditions;
-        // an array of all the UI need bars
-        public Image[] bars;
-        // the action we're currently carry out
-        private Action best;
-        public Action currentAction;
-        public Text currentActionText;
-
-        public Dictionary<string, Image> needBars;
-        public Light sun;
-        private float health;
-        public Image healthBar;
-        float changeInHealth;
-
-        public GameObject targetObject = null;
-        public Useable targetUseable = null;
-
-        public float actionTimerMax = 500.0f;
-        public float actionTimer;
-        public GameObject targetLight;
-
-        public float maxRange = 100.0f;
-
+        // An enum of needs that represent the values of the agent's needs
         public enum Needs
         {
             Hydration,
@@ -47,66 +20,99 @@ namespace UtilityAI
             Energy,
         };
 
-        private float hydration;
-        private float nourishment;
-        private float bodyTemperature;
-        private float entertainment;
-        private float hygiene;
-        private float energy;
+        private float hydration;        // Hydration value
+        private float nourishment;      // Nourishment value
+        private float bodyTemperature;  // Body Temperature value
+        private float entertainment;    // Entertainment value
+        private float hygiene;          // Hygiene value
+        private float energy;           // Energy value
 
+        public Dictionary<GameObject, Action> actionsOnUseables;    // A dictionary of all avaliable actions on useable GameObjects
+        public Action[] intrinsicActions;                           // An array of all the intrinsic actions
 
-        public NavMeshAgent nav;
-        public Animator animator;
+        public Condition[] conditions;                              // An array of all the conditions that can be met
 
+        public Image[] bars;                                        // An array of all the UI need bars
+        public Dictionary<string, Image> needBars;                  // A dictionary of all the UI need bars and their names
 
+        private Action best;                                        // The best possible action the agent can carry out due to it's circumstances
+        public Action currentAction;                                // The action we're currently carry out
+        public Text currentActionText;                              // The UI text that shows the current action
+        public float actionTimerMax;                                // The time in seconds between action decisions
+        public float actionTimer;                                   // The timer that decreases per frame
+        public GameObject targetLight;                              // A light the shines on the target for visual information
+
+        public Light sun;                                           // The directional light representing the sun
+
+        private float health;                                       // The value of health the agent has
+        private float changeInHealth;                               // The change in health value 
+        public float healthMultiplier;                              // The multiplier value that is multiplied by time between frames with to get the changeInHealth
+        public Image healthBar;                                     // The UI health bar image
+
+        public GameObject targetObject;                             // The target GameObject
+        public Useable targetUseable;                               // The target Useable
+        public float maxRange;                                      // The max radius around the agent for finding actions it can do on objects
+
+        public NavMeshAgent nav;                                    // The agent's NavMeshAgent component
+        public Animator animator;                                   // The agent's Animator component
+
+        // Use this for initialization
         private void Start()
         {
-            actionsOnUseables = new Dictionary<GameObject, Action>();
-            needBars = new Dictionary<string, Image>();
-            nav = GetComponent<NavMeshAgent>();
-            animator = GetComponent<Animator>();
-            changeInHealth = 1;
-            best = null;
-            actionTimer = 0;
+            actionsOnUseables   = new Dictionary<GameObject, Action>();
+            needBars            = new Dictionary<string, Image>();
+            best                = null;
+            currentAction       = null;
+            actionTimerMax      = 10.0f;
+            actionTimer         = 0;
+            health              = 1;
+            changeInHealth      = health;
+            healthMultiplier    = 0.005f;
+            targetObject        = null;
+            targetUseable       = null;
+            maxRange            = 100.0f;
+            nav                 = GetComponent<NavMeshAgent>();
+            animator            = GetComponent<Animator>();
 
-            int num = 0;
-            foreach (string needName in Enum.GetNames(typeof(Needs)))
-            {
-                needBars.Add(needName, bars[num]);
-                num++;
-            }
+            // For every need in Needs, add the name of the need and the bar image that represents that need's value
+            for (int i = 0; i < Enum.GetNames(typeof(Needs)).Length; i++)
+                needBars.Add(GetNeedName(i), bars[i]);
 
+            // For each condition in conditions, call Awake() to initialise condition variables
             foreach (Condition condition in conditions)
-            {
                 condition.Awake();
-            }
+
+            // Wave at the start of the application to give the agent time to evaluate and act on action
             animator.SetTrigger("Wave");
         }
 
-        // Update is called once per frame
+        // Update is called once per frame - updates the needs, UI, health, current action, target, and action timer
         void Update()
         {
-            UpdateNeeds();
-            UpdateHealth();
+            UpdateNeeds();  // Updates agent's need values including UI values
+            UpdateHealth(); // Updates agent's health value including UI value
+
+            // Check if targetObject is set to anything
             if (targetObject != null)
             {
+                // If the agent is within range of the current action's target
                 if (currentAction.withinRangeOfTarget)
                 {
+                    // If the targetObject is an animal, then turn off its movement to allow for collection of the object
                     if (targetObject.GetComponent<BasicAnimalAI>() != null)
                         targetObject.GetComponent<BasicAnimalAI>().turnOffMovement = true;
-                }
-                    
+                }      
             }
 
+            // If the actionTimer has reached 0
             if (actionTimer <= 0)
             {
-                // find the best action each frame (TODO - not every frame)
-                best = GetBestAction();
-                actionTimer = actionTimerMax;
+                best = GetBestAction();         // Find the best action
+                actionTimer = actionTimerMax;   // Reset the actionTimer
             }
-            actionTimer--;
+            actionTimer -= Time.deltaTime;      // Reduce the actionTimer by the change in time per frame - to go down in seconds
 
-            // if it is different from what we were doing, switch the finite state machine
+            // If it is different from what the agent is currently doing, switch the finite state machine
             if (best != currentAction)
             {
                 if (currentAction)
@@ -116,12 +122,12 @@ namespace UtilityAI
                     currentAction.Enter(this);
             }
 
-            // update the current action
+            // If the currentAction is set, update the current action and the text describing the action
             if (currentAction)
+            {
                 currentAction.UpdateAction(this);
-
-            if (currentAction != null)
                 currentActionText.text = currentAction.name;
+            }
         }
 
         Action GetBestAction()
@@ -164,6 +170,8 @@ namespace UtilityAI
             foreach (KeyValuePair<GameObject, Action> a in actionsOnUseables)
             {
                 objectValue = a.Value.Evaluate(this);
+                if (a.Key.GetComponent<BasicAnimalAI>() != null)
+                    a.Key.GetComponent<BasicAnimalAI>().updateEvaluationValue(objectValue);
                 if (bestObjectAction == null || objectValue > bestValue)
                 {
                     bestObjectAction = a.Value;
@@ -208,9 +216,10 @@ namespace UtilityAI
             }
         }
 
-        public float GetNeedValue(Needs n)
+        // GetNeedValue takes a string for the need name and returns the corresponding need value
+        public float GetNeedValue(Needs need)
         {
-            switch (n)
+            switch (need)
             {
                 case Needs.Hydration: return hydration;
                 case Needs.Nourishment: return nourishment;
@@ -222,9 +231,25 @@ namespace UtilityAI
             return 0;
         }
 
-        public string GetNeedName(int n)
+        // GetNeedValue takes a string for the need name and returns the corresponding need value
+        public float GetNeedValue(string needName)
         {
-            switch (n)
+            switch (needName)
+            {
+                case "Hydration": return hydration;
+                case "Nourishment": return nourishment;
+                case "BodyTemperature": return bodyTemperature;
+                case "Entertainment": return entertainment;
+                case "Hygiene": return hygiene;
+                case "Energy": return energy;
+            }
+            return 0;
+        }
+
+        // GetNeedName takes an int representing the index and returns the corresponding need name
+        public string GetNeedName(int index)
+        {
+            switch (index)
             {
                 case 0: return "Hydration";
                 case 1: return "Nourishment";
@@ -236,9 +261,10 @@ namespace UtilityAI
             return "";
         }
 
-        public Needs GetNeed(string n)
+        // GetNeed takes a string for the need name and returns the corresponding Need
+        public Needs GetNeed(string needName)
         {
-            switch (n)
+            switch (needName)
             {
                 case "Hydration": return Needs.Hydration;
                 case "Nourishment": return Needs.Nourishment;
@@ -250,9 +276,10 @@ namespace UtilityAI
             return 0;
         }
 
-        public Needs GetNeed(int n)
+        // GetNeed takes an int representing the index and returns the corresponding Need
+        public Needs GetNeed(int index)
         {
-            switch (n)
+            switch (index)
             {
                 case 0: return Needs.Hydration;
                 case 1: return Needs.Nourishment;
@@ -263,9 +290,11 @@ namespace UtilityAI
             }
             return 0;
         }
-        public void SetNeed(Needs n, float value)
+
+        // SetNeed takes a need and a value and according to which need that is passed in, its value is set to the value passed in
+        public void SetNeed(Needs need, float value)
         {
-            switch (n)
+            switch (need)
             {
                 case Needs.Hydration: hydration = value; break;
                 case Needs.Nourishment: nourishment = value; break;

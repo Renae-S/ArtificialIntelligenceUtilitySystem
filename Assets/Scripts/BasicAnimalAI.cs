@@ -2,21 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class BasicAnimalAI : MonoBehaviour {
 
     public Vector3 target;
     private NavMeshAgent nav;
-    public float bobbingFrequency= 1.0f;
-    public float bobbingAmplitude= 1.0f;
+    public float bobbingFrequency;
+    public float bobbingAmplitude;
     public GameObject playArea;
-    public bool turnOffMovement = false;
+    public bool turnOffMovement;
+    private TextMesh valueText;
 
     // Use this for initialization
     void Start()
     {
         nav = GetComponent<NavMeshAgent>();
         target = generatePosition();
+        bobbingFrequency = 1.0f;
+        bobbingAmplitude = 0.1f;
+        turnOffMovement = false;
+        valueText = GetComponentInChildren<TextMesh>();
     }
 
     // Update is called once per frame
@@ -47,5 +53,10 @@ public class BasicAnimalAI : MonoBehaviour {
         Vector3 pos = playArea.transform.position + new Vector3(Random.Range(-playArea.transform.localScale.x / 2, playArea.transform.localScale.x / 2), 0, 
             Random.Range(-playArea.transform.localScale.z / 2, playArea.transform.localScale.z / 2));
         return pos;
+    }
+
+    public void updateEvaluationValue(float value)
+    {
+        valueText.text = value.ToString();
     }
 }

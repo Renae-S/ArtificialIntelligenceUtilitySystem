@@ -10,7 +10,8 @@ public class FlyingAI : MonoBehaviour {
     public float speed = 50.0f;
 
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
         target = generatePosition();
     }
 

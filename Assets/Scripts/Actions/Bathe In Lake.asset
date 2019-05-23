@@ -9,8 +9,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 205fcaf89c02a104782413ae735c9313, type: 3}
-  m_Name: DrinkWater
+  m_Name: Bathe In Lake
   m_EditorClassIdentifier: 
   withinRangeOfTarget: 0
-  animation: Pickup
-  distance: 0
+  commitmentToAction: 0
+  animation: Idle

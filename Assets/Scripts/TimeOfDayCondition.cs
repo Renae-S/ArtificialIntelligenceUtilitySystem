@@ -52,8 +52,6 @@ namespace UtilityAI
             changeInNeedUI = 1;
         }
 
-        public override void Exit(Agent agent)
-        {
-        }
+        public override void Exit(Agent agent) { }
     }
 }

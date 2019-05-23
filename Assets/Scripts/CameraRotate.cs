@@ -10,15 +10,10 @@ public class CameraRotate : MonoBehaviour {
 
     float lastMouseX;
     float lastMouseY;
-
-	// Use this for initialization
-	void Start () {
-		
-	}
 	
 	// Update is called once per frame
-	void Update () {
-		
+	void Update ()
+    {	
         // Rotate 
         if (Input.GetMouseButton(1))
         {

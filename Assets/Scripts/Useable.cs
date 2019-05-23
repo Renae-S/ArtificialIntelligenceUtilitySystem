@@ -9,16 +9,14 @@ namespace UtilityAI
         public Action action;
         public float range;
 
-        // Use this for initialization
-        void Start()
+        private void Start()
         {
+            // clone our own copy of the action
+            string nm = action.name;
+            action = Instantiate(action);
+            action.name = nm;
 
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
+            action.SetGameObject(gameObject);
         }
     }
 }

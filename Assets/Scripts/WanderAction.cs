@@ -85,9 +85,7 @@ namespace UtilityAI
         public override void UpdateAction(Agent agent)
         {
             if (!agent.GetComponent<Animator>().GetCurrentAnimatorStateInfo(1).IsName("Idle"))
-            {
                 withinRangeOfTarget = true;
-            }
 
             timer += Time.deltaTime;
 
@@ -110,6 +108,7 @@ namespace UtilityAI
 
         public override void Exit(Agent agent)
         {
+            withinRangeOfTarget = false;
         }
 
         public Vector3 RandomNavSphere(Vector3 origin, float distance, int layerMask)

@@ -4,17 +4,21 @@ using UnityEngine;
 
 public class CameraZoom : MonoBehaviour {
 
-    float minDistance = 15.0f;
-    float maxDistance = 90.0f;
-    public float sensitivity = 10.0f;
+    float minDistance;
+    float maxDistance;
+    public float sensitivity;
 
 	// Use this for initialization
-	void Start () {
-
+	void Start ()
+    {
+        minDistance = 15.0f;
+        maxDistance = 90.0f;
+        sensitivity = 10.0f;
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
         float FOV = Camera.main.fieldOfView;
         FOV += Input.GetAxis("Mouse ScrollWheel") * sensitivity;
         FOV = Mathf.Clamp(FOV, minDistance, maxDistance);

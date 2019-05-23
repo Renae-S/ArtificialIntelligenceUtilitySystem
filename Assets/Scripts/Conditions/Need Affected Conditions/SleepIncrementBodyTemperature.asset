@@ -14,5 +14,5 @@ MonoBehaviour:
   multiplier: 0.025
   needsAffected:
   - BodyTemperature
-  changeInNeedUI: 0.53486234
+  changeInNeedUI: 1
   action: {fileID: 11400000, guid: a7295af7de6c94e4085ba4b6ff5c52cd, type: 2}

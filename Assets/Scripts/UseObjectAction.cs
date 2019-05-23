@@ -9,8 +9,15 @@ namespace UtilityAI
     public class UseObjectAction : Action
     {
         public string animation;
-        public float distance;
-        private float maxSpeed = 15.0f;
+        private float distance;
+        private float maxSpeed;
+
+        GameObject target;
+
+        public override void SetGameObject(GameObject go)
+        {
+            target = go;
+        }
 
         public override float Evaluate(Agent agent)
         {
@@ -28,14 +35,15 @@ namespace UtilityAI
                 Agent.Needs need = agent.GetNeed(i);
                 if (agent.GetNeedValue(need) <= 0)
                 {
-                    urgency = 100000000000000000;
+                    urgency = 100000;
                     agent.maxRange = 200;
                 }
 
-
+                // If the value of the need is full then urgency is set to 0
                 if (agent.GetNeedValue(need) >= 1)
                     urgency = 0;
 
+                // If the value of the need neither 1 or 0
                 if (agent.GetNeedValue(need) > 0 && agent.GetNeedValue(need) < 1)
                     urgency = (1 - agent.GetNeedValue(need)) * Agent.Needs.GetNames(typeof(Agent.Needs)).Length;
 
@@ -45,12 +53,13 @@ namespace UtilityAI
                     if (condition.GetType() == typeof(ActionCondition))
                     {
                         ActionCondition actionCondition = (ActionCondition)condition;
-                        if (actionCondition.action == this)
+                        if (actionCondition.action.name == this.name)
                         {
                             foreach (string needName in actionCondition.needsAffected)
                             {
                                 if (agent.GetNeedName(i) == needName)
                                 {
+                                    distance = Vector3.Distance(agent.transform.position, target.transform.position);
                                     if (actionCondition.multiplier > 0)
                                     {
                                         recovery = actionCondition.multiplier * 10;
@@ -70,8 +79,37 @@ namespace UtilityAI
                             }
                         }
                     }
-                }
+                    if (condition.GetType() == typeof(TimeOfDayCondition))
+                    {
+                        TimeOfDayCondition timeOfDayCondition = (TimeOfDayCondition)condition;
 
+                        if (timeOfDayCondition.CheckCondition(agent))
+                        {
+                            foreach (string needName in timeOfDayCondition.needsAffected)
+                            {
+                                if (agent.GetNeedName(i) == needName)
+                                {
+                                    distance = Vector3.Distance(agent.transform.position, target.transform.position);
+                                    if (timeOfDayCondition.multiplier > 0)
+                                    {
+                                        recovery = timeOfDayCondition.multiplier * 10;
+                                        decrement = 0;
+                                    }
+                                    else if (timeOfDayCondition.multiplier < 0)
+                                    {
+                                        recovery = 0;
+                                        decrement = timeOfDayCondition.multiplier * (distance / maxSpeed);
+                                    }
+                                    else
+                                    {
+                                        recovery = 0;
+                                        decrement = 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 if (commitmentToAction == true)
                     evaluationValue += 5;
                 evaluationValue = urgency * (recovery - decrement);
@@ -84,18 +122,18 @@ namespace UtilityAI
         public override void UpdateAction(Agent agent)
         {
             // if the agent is too far away move to the target
-            if (Vector3.Distance(agent.transform.position, agent.targetObject.transform.position) > agent.targetUseable.range)
+            if (Vector3.Distance(agent.transform.position, target.transform.position) > agent.targetUseable.range)
             {
                 float slowingDistance = 8.0f;
                 float minSpeed = 5.0f;
                 float maxSpeed = 15.0f;
 
-                agent.nav.SetDestination(agent.targetObject.transform.position);
-                agent.targetLight.transform.position = agent.targetObject.transform.position;
+                agent.nav.SetDestination(target.transform.position);
+                agent.targetLight.transform.position = target.transform.position;
                 agent.nav.speed = maxSpeed;
                 agent.animator.SetFloat("MoveSpeed", 5.0f);
 
-                distance = Vector3.Distance(agent.transform.position, agent.targetObject.transform.position);
+                distance = Vector3.Distance(agent.transform.position, target.transform.position);
 
                 if (agent.nav.isStopped != true && distance <= slowingDistance)
                 {
@@ -108,7 +146,7 @@ namespace UtilityAI
             else
             {
                 // otherwise play animation and get bonuses
-                agent.transform.forward = new Vector3(agent.targetObject.transform.position.x - agent.transform.position.x, 0, agent.targetObject.transform.position.z - agent.transform.position.z);
+                agent.transform.forward = new Vector3(target.transform.position.x - agent.transform.position.x, 0, target.transform.position.z - agent.transform.position.z);
                 agent.currentAction.withinRangeOfTarget = true;
                 commitmentToAction = true;
                 agent.nav.velocity = Vector3.zero;
@@ -122,7 +160,7 @@ namespace UtilityAI
                 else
                 {
                     agent.animator.SetFloat("MoveSpeed", 0.0f);
-                    if (agent.targetObject.name == "Tent")
+                    if (target.name == "Tent")
                         agent.transform.Rotate(-90, 0, 0);
                 }
 
@@ -135,7 +173,8 @@ namespace UtilityAI
             agent.nav = agent.gameObject.GetComponent<NavMeshAgent>();
             agent.animator = agent.gameObject.GetComponent<Animator>();
             withinRangeOfTarget = false;
-            distance = 0;
+            maxSpeed = 15.0f;
+            distance = Vector3.Distance(agent.transform.position, target.transform.position);
             commitmentToAction = false;
         }
 

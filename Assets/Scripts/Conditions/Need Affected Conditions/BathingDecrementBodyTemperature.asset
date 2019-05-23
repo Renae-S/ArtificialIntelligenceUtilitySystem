@@ -9,10 +9,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f830a9829ea7634d8a4403e3216cc1a, type: 3}
-  m_Name: WarmingByFireIncrement
+  m_Name: BathingDecrementBodyTemperature
   m_EditorClassIdentifier: 
-  multiplier: 0.1
+  multiplier: -0.005
   needsAffected:
   - BodyTemperature
-  changeInNeedUI: 0.2584442
-  action: {fileID: 11400000, guid: 553208e27c7ac4b488c685557c5137e3, type: 2}
+  changeInNeedUI: 1
+  action: {fileID: 11400000, guid: 528d01f36ba1a11408f1ce649a8a47c9, type: 2}
