@@ -10,7 +10,7 @@ namespace UtilityAI
     {
         public string animation;
         private float distance;
-        private float maxSpeed;
+        public float maxSpeed;
 
         GameObject target;
 
@@ -68,7 +68,7 @@ namespace UtilityAI
                                     else if (actionCondition.multiplier < 0)
                                     {
                                         recovery = 0;
-                                        decrement = actionCondition.multiplier * (distance / maxSpeed);
+                                        decrement = actionCondition.multiplier * 10;
                                     }
                                     else
                                     {
@@ -95,10 +95,10 @@ namespace UtilityAI
                                         recovery = timeOfDayCondition.multiplier * 10;
                                         decrement = 0;
                                     }
-                                    else if (timeOfDayCondition.multiplier < 0)
+                                    if (timeOfDayCondition.multiplier < 0)
                                     {
                                         recovery = 0;
-                                        decrement = timeOfDayCondition.multiplier * (distance / maxSpeed);
+                                        decrement = timeOfDayCondition.multiplier * (distance / 15);
                                     }
                                     else
                                     {
@@ -109,10 +109,10 @@ namespace UtilityAI
                             }
                         }
                     }
+                    if (commitmentToAction == true) //does nothing!!!
+                        evaluationValue += 5;
+                    evaluationValue = urgency * (recovery + decrement);
                 }
-                if (commitmentToAction == true)
-                    evaluationValue += 5;
-                evaluationValue = urgency * (recovery - decrement);
                 finalEvaluation += evaluationValue;
             }
 
@@ -124,24 +124,12 @@ namespace UtilityAI
             // if the agent is too far away move to the target
             if (Vector3.Distance(agent.transform.position, target.transform.position) > agent.targetUseable.range)
             {
-                float slowingDistance = 8.0f;
-                float minSpeed = 5.0f;
-                float maxSpeed = 15.0f;
-
                 agent.nav.SetDestination(target.transform.position);
                 agent.targetLight.transform.position = target.transform.position;
                 agent.nav.speed = maxSpeed;
                 agent.animator.SetFloat("MoveSpeed", 5.0f);
 
                 distance = Vector3.Distance(agent.transform.position, target.transform.position);
-
-                if (agent.nav.isStopped != true && distance <= slowingDistance)
-                {
-                    if (agent.nav.speed > minSpeed)
-                        agent.nav.speed = agent.nav.speed * Time.deltaTime * maxSpeed;
-                    else
-                        agent.nav.speed = minSpeed;
-                }
             }
             else
             {
@@ -163,8 +151,6 @@ namespace UtilityAI
                     if (target.name == "Tent")
                         agent.transform.Rotate(-90, 0, 0);
                 }
-
-
             }
         }
 

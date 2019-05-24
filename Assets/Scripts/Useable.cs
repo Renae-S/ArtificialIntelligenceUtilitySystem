@@ -8,6 +8,7 @@ namespace UtilityAI
     {
         public Action action;
         public float range;
+        private TextMesh valueText;
 
         private void Start()
         {
@@ -15,8 +16,14 @@ namespace UtilityAI
             string nm = action.name;
             action = Instantiate(action);
             action.name = nm;
+            valueText = GetComponentInChildren<TextMesh>();
 
             action.SetGameObject(gameObject);
+        }
+
+        public void updateEvaluationValue(float value)
+        {
+            valueText.text = value.ToString("0.00");
         }
     }
 }

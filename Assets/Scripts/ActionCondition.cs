@@ -20,7 +20,7 @@ namespace UtilityAI
         public override bool CheckCondition(Agent agent)
         {
             // If the condition's action is the agent's current action
-            if (action.name == agent.currentAction.name)
+            if (agent.currentAction && action.name == agent.currentAction.name)
             {
                 // Set the action's commitmentToAction to true and returns true
                 action.commitmentToAction = true;

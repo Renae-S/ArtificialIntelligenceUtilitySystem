@@ -30,8 +30,7 @@ namespace UtilityAI
                 Agent.Needs need = agent.GetNeed(i);
                 if (agent.GetNeedValue(need) <= 0)
                 {
-                    urgency = 100000000000000000;
-                    agent.maxRange = 200;
+                    urgency = 100000;
                 }
 
                 if (agent.GetNeedValue(need) >= 1)
@@ -54,13 +53,13 @@ namespace UtilityAI
                                 {
                                     if (actionCondition.multiplier > 0)
                                     {
-                                        recovery = actionCondition.multiplier;
+                                        recovery = actionCondition.multiplier * 5;
                                         decrement = 0;
                                     }
                                     else if (actionCondition.multiplier < 0)
                                     {
                                         recovery = 0;
-                                        decrement = actionCondition.multiplier;
+                                        decrement = actionCondition.multiplier * 5;
                                     }
                                     else
                                     {
@@ -71,18 +70,47 @@ namespace UtilityAI
                             }
                         }
                     }
-                }
+                    if (condition.GetType() == typeof(TimeOfDayCondition))
+                    {
+                        TimeOfDayCondition timeOfDayCondition = (TimeOfDayCondition)condition;
 
-                if (commitmentToAction == true)
-                    evaluationValue += 5;
-                evaluationValue = urgency * (recovery - decrement);
+                        if (timeOfDayCondition.CheckCondition(agent))
+                        {
+                            foreach (string needName in timeOfDayCondition.needsAffected)
+                            {
+                                if (agent.GetNeedName(i) == needName)
+                                {
+                                    if (timeOfDayCondition.multiplier > 0)
+                                    {
+                                        recovery = timeOfDayCondition.multiplier * 5;
+                                        decrement = 0;
+                                    }
+                                    if (timeOfDayCondition.multiplier < 0)
+                                    {
+                                        recovery = 0;
+                                        decrement = timeOfDayCondition.multiplier * 5;
+                                    }
+                                    else
+                                    {
+                                        recovery = 0;
+                                        decrement = 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (commitmentToAction == true) //does nothing!!!
+                        evaluationValue += 5;
+                    evaluationValue = urgency * (recovery + decrement);
+                }
                 finalEvaluation += evaluationValue;
             }
+
             return finalEvaluation;
         }
-    
 
-        public override void UpdateAction(Agent agent)
+
+    public override void UpdateAction(Agent agent)
         {
             if (!agent.GetComponent<Animator>().GetCurrentAnimatorStateInfo(1).IsName("Idle"))
                 withinRangeOfTarget = true;

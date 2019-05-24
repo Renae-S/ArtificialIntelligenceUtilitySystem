@@ -89,21 +89,6 @@ namespace UtilityAI
         // Update is called once per frame - updates the needs, UI, health, current action, target, and action timer
         void Update()
         {
-            UpdateNeeds();  // Updates agent's need values including UI values
-            UpdateHealth(); // Updates agent's health value including UI value
-
-            // Check if targetObject is set to anything
-            if (targetObject != null)
-            {
-                // If the agent is within range of the current action's target
-                if (currentAction.withinRangeOfTarget)
-                {
-                    // If the targetObject is an animal, then turn off its movement to allow for collection of the object
-                    if (targetObject.GetComponent<BasicAnimalAI>() != null)
-                        targetObject.GetComponent<BasicAnimalAI>().turnOffMovement = true;
-                }      
-            }
-
             // If the actionTimer has reached 0
             if (actionTimer <= 0)
             {
@@ -128,6 +113,21 @@ namespace UtilityAI
                 currentAction.UpdateAction(this);
                 currentActionText.text = currentAction.name;
             }
+
+            // Check if targetObject is set to anything
+            if (targetObject != null)
+            {
+                // If the agent is within range of the current action's target
+                if (currentAction && currentAction.withinRangeOfTarget)
+                {
+                    // If the targetObject is an animal, then turn off its movement to allow for collection of the object
+                    if (targetObject.GetComponent<BasicAnimalAI>() != null)
+                        targetObject.GetComponent<BasicAnimalAI>().turnOffMovement = true;
+                }
+            }
+
+            UpdateNeeds();  // Updates agent's need values including UI values
+            UpdateHealth(); // Updates agent's health value including UI value
         }
 
         Action GetBestAction()
@@ -170,8 +170,7 @@ namespace UtilityAI
             foreach (KeyValuePair<GameObject, Action> a in actionsOnUseables)
             {
                 objectValue = a.Value.Evaluate(this);
-                if (a.Key.GetComponent<BasicAnimalAI>() != null)
-                    a.Key.GetComponent<BasicAnimalAI>().updateEvaluationValue(objectValue);
+                a.Key.GetComponent<Useable>().updateEvaluationValue(objectValue);
                 if (bestObjectAction == null || objectValue > bestValue)
                 {
                     bestObjectAction = a.Value;
