@@ -14,7 +14,7 @@ public class CameraRotate : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {	
-        // Rotate 
+        // Rotate according to mouse position if the right mouse button is pushed
         if (Input.GetMouseButton(1))
         {
             float deltaX = Input.mousePosition.x - lastMouseX;
@@ -30,11 +30,10 @@ public class CameraRotate : MonoBehaviour {
             angles.y = angles.y + deltaX * Time.deltaTime * speed;
             transform.eulerAngles = angles;
         }
+
         transform.position = target.position - distance * transform.forward;
 
         lastMouseX = Input.mousePosition.x;
         lastMouseY = Input.mousePosition.y;
-
-        // Zoom
 	}
 }

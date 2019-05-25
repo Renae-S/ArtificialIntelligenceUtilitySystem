@@ -34,12 +34,12 @@ namespace UtilityAI
 
         // Updates the UI bars for the agent's needs and the actual need values if the agent is performing the action currently
         // agent - the agent that has its needs and UI for needs updated
-        public override void UpdateNeedsUI(Agent agent)
+        public override void UpdateUI(Agent agent)
         {
             // If the agent is in range of the target of its current action
             if (agent.currentAction.withinRangeOfTarget)
             {
-                // For ever need affected in this condition
+                // For every need affected in this condition
                 foreach (string need in needsAffected)
                 {
                     changeInNeedUI = agent.needBars[need].fillAmount;   // Adjust the changeInNeedUI to the current value of the need's UI bar fill amount

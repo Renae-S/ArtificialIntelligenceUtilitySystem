@@ -19,6 +19,8 @@ public class CameraZoom : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+        // If the middle mouse button scrolls in, then zoom in. Will stop zooming in at the minDistance
+        // If the middle mouse button scrolls out, then zoom out. Will stop zooming out at the maxDistance
         float FOV = Camera.main.fieldOfView;
         FOV += Input.GetAxis("Mouse ScrollWheel") * sensitivity;
         FOV = Mathf.Clamp(FOV, minDistance, maxDistance);

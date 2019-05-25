@@ -22,6 +22,6 @@ namespace UtilityAI
         public abstract void Exit(Agent agent);         // Resets variables that were modified on exiting the action 
                                                         // agent - the agent that the action belongs to
 
-        public virtual void SetGameObject(GameObject go) { }
+        public virtual void SetGameObject(GameObject go) { }    // Sets the GameObject passed in as the target GameObject of an Action
     }
 }

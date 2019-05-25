@@ -10,6 +10,7 @@ namespace UtilityAI
     public class Agent : MonoBehaviour
     {
         // An enum of needs that represent the values of the agent's needs
+        // These needs can be altered to fit the requirements to a particular application
         public enum Needs
         {
             Hydration,
@@ -20,6 +21,7 @@ namespace UtilityAI
             Energy,
         };
 
+        // These needs can be altered to fit the requirements to a particular application
         private float hydration;        // Hydration value
         private float nourishment;      // Nourishment value
         private float bodyTemperature;  // Body Temperature value
@@ -32,8 +34,11 @@ namespace UtilityAI
 
         public Condition[] conditions;                              // An array of all the conditions that can be met
 
-        public Image[] bars;                                        // An array of all the UI need bars
+        public Image[] nBars;                                       // An array of all the UI need bars
         public Dictionary<string, Image> needBars;                  // A dictionary of all the UI need bars and their names
+        public Image[] eBars;                                       // An array of all the UI emotion bars
+        public Dictionary<string, Image> emotionBars;               // A dictionary of all the UI emotion bars and their names
+
 
         private Action best;                                        // The best possible action the agent can carry out due to it's circumstances
         public Action currentAction;                                // The action we're currently carry out
@@ -70,13 +75,13 @@ namespace UtilityAI
             healthMultiplier    = 0.005f;
             targetObject        = null;
             targetUseable       = null;
-            maxRange            = 100.0f;
+            maxRange            = 200.0f;
             nav                 = GetComponent<NavMeshAgent>();
             animator            = GetComponent<Animator>();
 
             // For every need in Needs, add the name of the need and the bar image that represents that need's value
             for (int i = 0; i < Enum.GetNames(typeof(Needs)).Length; i++)
-                needBars.Add(GetNeedName(i), bars[i]);
+                needBars.Add(GetNeedName(i), nBars[i]);
 
             // For each condition in conditions, call Awake() to initialise condition variables
             foreach (Condition condition in conditions)
@@ -130,21 +135,25 @@ namespace UtilityAI
             UpdateHealth(); // Updates agent's health value including UI value
         }
 
+        // Returns the action (within the agent's radius) with the best evaluation value 
         Action GetBestAction()
         {
-            // do the physics overlapsphere and check every useable around you
-            // and get its UseObjectAction
+            // Clear the previous actions from the last decision
             actionsOnUseables.Clear();
 
+            // Physics overlapsphere and check every useable around the agent
             Collider[] items = Physics.OverlapSphere(transform.position, maxRange);
 
+            // For every collider hit in the agents range
             foreach (Collider col in items)
             {
+                // If the GameObject is a useable
                 Useable useable = col.GetComponent<Useable>();
                 if (useable)
                 {
                     if (col.gameObject.tag == "Useable")
                     {
+                        // Add the GameObject and the action associated to the actionsOnUseables dictionary
                         actionsOnUseables.Add(col.gameObject, col.gameObject.GetComponent<Useable>().action);
                     }
                 }
@@ -157,6 +166,7 @@ namespace UtilityAI
 
             float bestValue = 0;
 
+            // For every intrisic action of the agent, evaluate it and determine the highest value action and keep it set as the bestIntrinsicAction variable
             foreach (Action intrinsicAction in intrinsicActions)
             {
                 intrinsicValue = intrinsicAction.Evaluate(this);
@@ -167,6 +177,8 @@ namespace UtilityAI
                 }
             }
 
+            // For every useable action of the agent, evaluate it and determine the highest value action and keep it set as the bestObjectAction variable
+            // Set the target object to the object that carries this action
             foreach (KeyValuePair<GameObject, Action> a in actionsOnUseables)
             {
                 objectValue = a.Value.Evaluate(this);
@@ -180,35 +192,45 @@ namespace UtilityAI
                 }
             }
 
-            
+            // Determine the action with the highest value out of the object and intrinsic actions, and return the action with the higher value
             return intrinsicValue > objectValue ? bestIntrinsicAction : bestObjectAction;
         }
 
+        // Checks every condition in the agent and if the condition is true, it updates the need values associated with the condition
         void UpdateNeeds()
         {
+            // For every condition in the agent
             foreach (Condition condition in conditions)
             {
+                // If the condition is not currently met, then exit the condition
                 if (!condition.CheckCondition(this))
                     condition.Exit(this);
 
+                // If the condition is currently met, then update the condition needs
                 if (condition.CheckCondition(this))
-                    condition.UpdateNeedsUI(this);
+                    condition.UpdateUI(this);
             }
         }
 
+        // Updates the value of the agents health according to the number of need bars that are empty
         void UpdateHealth()
         {
             int NumOfLowNeedBars = 0;
-            foreach (Image bar in bars)
+
+            // For each of the need bars of the agent
+            foreach (Image bar in nBars)
             {
+                // If the bar is empty, then increment the number of low need bars 
                 if (bar.fillAmount <= 0)
                     NumOfLowNeedBars++;
             }
 
+            // Apply the changes of the agents health according to the number of low need bars multiplied by a negative multiplier and the change in time
             changeInHealth += (NumOfLowNeedBars * -0.005f) * Time.deltaTime;
             healthBar.fillAmount = changeInHealth;
 
-            if (changeInHealth <= 1)
+            // If the agent's health is less than full and there are no need bars that are empty, increase the health by the multiplier multiplied by the change in time
+            if (changeInHealth < 1)
             {
                 if (NumOfLowNeedBars == 0)
                     changeInHealth += 0.005f * Time.deltaTime;

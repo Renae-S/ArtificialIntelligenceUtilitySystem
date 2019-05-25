@@ -14,6 +14,8 @@ namespace UtilityAI
         public Vector3 randomDirection;
         public Vector3 destinationPos;
 
+        // Evaluates all of the agents needs and calculates the urgency of the need with a float - a high value mean a high importance
+        // agent - the agent that has its needs evaluated
         public override float Evaluate(Agent agent)
         {
             float finalEvaluation = 0;
@@ -99,9 +101,7 @@ namespace UtilityAI
                             }
                         }
                     }
-                    if (commitmentToAction == true) //does nothing!!!
-                        evaluationValue += 5;
-                    evaluationValue = urgency * (recovery + decrement);
+                    evaluationValue += urgency * (recovery + decrement);
                 }
                 finalEvaluation += evaluationValue;
             }
@@ -109,8 +109,9 @@ namespace UtilityAI
             return finalEvaluation;
         }
 
-
-    public override void UpdateAction(Agent agent)
+        // Updates the agents movement, needs, animation and destination
+        // agent - the agent that has its movement and needs updated
+        public override void UpdateAction(Agent agent)
         {
             if (!agent.GetComponent<Animator>().GetCurrentAnimatorStateInfo(1).IsName("Idle"))
                 withinRangeOfTarget = true;
@@ -127,6 +128,8 @@ namespace UtilityAI
             }
         }
 
+        // Intialises any variables in the class on entering the action
+        // agent - the agent that the action belongs to
         public override void Enter(Agent agent)
         {
             agent.nav = agent.gameObject.GetComponent<NavMeshAgent>();
@@ -134,11 +137,17 @@ namespace UtilityAI
             timer = 0;
         }
 
+        // Resets variables that were modified on exiting the action
+        // agent - the agent that the action belongs to
         public override void Exit(Agent agent)
         {
             withinRangeOfTarget = false;
         }
 
+        // Returns a random point on the NavMesh within a given distance to the origin.
+        // origin - AI agent position
+        // distance - a maximum distance the agent will move between finding a new position to move to 
+        // layerMask - typically -1 for all layers
         public Vector3 RandomNavSphere(Vector3 origin, float distance, int layerMask)
         {
             randomDirection = Random.insideUnitSphere * distance;

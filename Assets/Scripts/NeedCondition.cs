@@ -15,40 +15,47 @@ namespace UtilityAI
             public float value;
             private Image needBar;
 
-            // Use this for initialization
+            // Checks whether there is a need of the agent that is the same as this condition's need and sets the action's agent commitment accordingly, returns true if the needs 
+            // are the same, false otherwise
+            // agent - the agent used to check if it has a need the same as this need
             public override bool CheckCondition(Agent agent)
             {
-
+                // If the condition's need is a need of the agent, set the bar image of this condition to the agent's
                 if (agent.needBars.ContainsKey(need))
                     needBar = agent.needBars[need];
 
+                // If the need value reaches the value of this condition, then return true
                 if (needBar.fillAmount <= value)
                     return true;
 
+                // Otherwise return false
                 return false;
             }
 
-            // Update is called once per frame
-            public override void UpdateNeedsUI(Agent agent)
-            {          
-                foreach (string need in needsAffected)
+            // Updates the UI bars for the agent's emotions
+            // agent - the agent that has its emotions and UI for needs updated
+            public override void UpdateUI(Agent agent)
+            {
+                // For every emotion affected by this condition, adjust the changeInEmotionUI to the current value of the emotion's UI bar fill amount
+                foreach (string emotion in emotionsAffected)
                 {
-                    changeInNeedUI = agent.needBars[need].fillAmount;
-                    agent.SetNeed(agent.GetNeed(need), changeInNeedUI);
-                    if (agent.needBars.ContainsKey(need))
+                    changeInEmotionUI = agent.emotionBars[emotion].fillAmount;
+                    // If the agent has an emotionBar with the string name of the emotion passed in through inspector
+                    if (agent.emotionBars.ContainsKey(emotion))
                     {
-                        changeInNeedUI += multiplier * Time.deltaTime;
-                        agent.needBars[need].fillAmount = changeInNeedUI;
-                        agent.SetNeed(agent.GetNeed(need), changeInNeedUI);
+                        changeInEmotionUI += multiplier * Time.deltaTime;           // Set value of changeEmotionUI to be the multiplier by time passed from previous frame
+                        agent.emotionBars[emotion].fillAmount = changeInEmotionUI;  // Set value of the emotion bar UI fill amount to changeEmotionUI
                     }
                 }
             }
 
+            // Awake allows variables to be initialised when the application begins
             public override void Awake()
             {
                 changeInNeedUI = 1;
             }
 
+            // Allows for variable resetting or adjustments to condition made upon exiting the condition
             public override void Exit(Agent agent) { }
         }
     }
