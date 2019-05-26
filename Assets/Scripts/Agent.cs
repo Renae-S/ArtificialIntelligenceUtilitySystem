@@ -43,6 +43,8 @@ namespace UtilityAI
         private Action best;                                        // The best possible action the agent can carry out due to it's circumstances
         public Action currentAction;                                // The action we're currently carry out
         public Text currentActionText;                              // The UI text that shows the current action
+        public Text currentEmotionText;                             // The UI text that shows the current emotion
+        private float changeInHappiness;                              // The change in happiness value
         public float actionTimerMax;                                // The time in seconds between action decisions
         public float actionTimer;                                   // The timer that decreases per frame
         public GameObject targetLight;                              // A light the shines on the target for visual information
@@ -66,6 +68,7 @@ namespace UtilityAI
         {
             actionsOnUseables   = new Dictionary<GameObject, Action>();
             needBars            = new Dictionary<string, Image>();
+            emotionBars         = new Dictionary<string, Image>();
             best                = null;
             currentAction       = null;
             actionTimerMax      = 10.0f;
@@ -83,9 +86,16 @@ namespace UtilityAI
             for (int i = 0; i < Enum.GetNames(typeof(Needs)).Length; i++)
                 needBars.Add(GetNeedName(i), nBars[i]);
 
+            // For every emotion in Needs, add the name of the need and the bar image that represents that need's value
+            for (int i = 0; i < eBars.Length; i++)
+                emotionBars.Add(eBars[i].name, eBars[i]);
+
             // For each condition in conditions, call Awake() to initialise condition variables
             foreach (Condition condition in conditions)
                 condition.Awake();
+
+            for (int i = 0; i < Enum.GetNames(typeof(Needs)).Length; i++)
+                SetNeed(GetNeed(i), 1);
 
             // Wave at the start of the application to give the agent time to evaluate and act on action
             animator.SetTrigger("Wave");
@@ -95,7 +105,7 @@ namespace UtilityAI
         void Update()
         {
             // If the actionTimer has reached 0
-            if (actionTimer <= 0)
+            if (actionTimer <= 0 || currentAction == null)
             {
                 best = GetBestAction();         // Find the best action
                 actionTimer = actionTimerMax;   // Reset the actionTimer
@@ -119,6 +129,9 @@ namespace UtilityAI
                 currentActionText.text = currentAction.name;
             }
 
+            // Update current emotion text
+            currentEmotionText.text = GetHighestEmotion();
+
             // Check if targetObject is set to anything
             if (targetObject != null)
             {
@@ -131,8 +144,71 @@ namespace UtilityAI
                 }
             }
 
-            UpdateNeeds();  // Updates agent's need values including UI values
-            UpdateHealth(); // Updates agent's health value including UI value
+            UpdateNeeds();      // Updates agent's need values including UI values
+            UpdateHealth();     // Updates agent's health value including UI value
+            UpdateHappiness();  // Check if any negative emotions are high and apply it to the agent's happiness
+
+        }
+
+        // Returns the name of the highest emotion value of the agent
+        string GetHighestEmotion()
+        {
+            Image highestEmotion = null;
+            float emotionValue = 0;
+
+            float bestValue = 0;
+
+            // For every emotion of the agent, check it and determine the highest value emotion and return the generic name of the highest value emotion
+            foreach (Image bar in eBars)
+            {
+                emotionValue = bar.fillAmount;
+                if (highestEmotion == null || emotionValue > bestValue)
+                {
+                    highestEmotion = bar;
+                    bestValue = emotionValue;
+                }
+            }
+
+            switch (highestEmotion.name)
+            {
+                case ("Happiness"):
+                    return "Happy";
+                case ("Sadness"):
+                    return "Sad";
+                case ("Fear"):
+                    return "Scared";
+                case ("Disgust"):
+                    return "Disgusted";
+                case ("Anger"):
+                    return "Angry";
+                case ("Surprise"):
+                    return "Surprised";
+            }
+            return "";
+        }
+
+        private void UpdateHappiness()
+        {
+            int NumOfLowEmotionBars = 0;
+
+            // For each of the emotion bars of the agent
+            foreach (Image bar in eBars)
+            {
+                // If the bar is empty, then increment the number of low need bars 
+                if (bar.fillAmount <= 0)
+                    NumOfLowEmotionBars++;
+            }
+
+            // Apply the changes of the agents health according to the number of low need bars multiplied by a negative multiplier and the change in time
+            changeInHappiness += (NumOfLowEmotionBars * -0.05f) * Time.deltaTime;
+            eBars[0].fillAmount = changeInHealth;
+
+            // If the agent's happiness is less than full and there are no need bars that are empty, increase the health by the multiplier multiplied by the change in time
+            if (changeInHappiness < 1)
+            {
+                if (NumOfLowEmotionBars == 0)
+                    changeInHappiness += 0.05f * Time.deltaTime;
+            }
         }
 
         // Returns the action (within the agent's radius) with the best evaluation value 

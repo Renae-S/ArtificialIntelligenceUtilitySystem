@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 918d710e1db33f542b7a8c6f2515d25a, type: 3}
+  m_Name: HighHydrationFear
+  m_EditorClassIdentifier: 
+  multiplier: -0.01
+  needsAffected: []
+  emotionsAffected:
+  - Fear
+  changeInNeedUI: 1
+  changeInEmotionUI: 0
+  need: Hydration
+  value: 0.2
+  ifAboveValue: 1

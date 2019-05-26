@@ -97,7 +97,7 @@ namespace UtilityAI
                         }
                     }
                     // Calculate recovery recieved for every time of day condition met over 10 seconds and decrement received over travel distance
-                    // If the condition is an action condition
+                    // If the condition is an time of day condition
                     if (condition.GetType() == typeof(TimeOfDayCondition))
                     {
                         // Create an time of day condition of the current condition
@@ -136,7 +136,7 @@ namespace UtilityAI
                             }
                         }
                     }
-                    // Evaluate value
+                    // Calculate evaluation value
                     evaluationValue += urgency * (recovery + decrement);
                 }
                 finalEvaluation += evaluationValue;
@@ -167,12 +167,14 @@ namespace UtilityAI
                 commitmentToAction = true;
                 agent.nav.velocity = Vector3.zero;
 
+                // If the animation to be played is not an idle animation, then check if the current animation of the agent is not the animation passes in and set trigger for the animation if so
                 if (animation != "Idle")
                 {
                     if (!agent.GetComponent<Animator>().GetCurrentAnimatorStateInfo(1).IsName(animation))
                         agent.GetComponent<Animator>().SetTrigger(animation);
                 }
 
+                // If the agent is sleeping in the tent, rotate the agent to lay horizontally in the tent and stop its movement
                 else
                 {
                     agent.animator.SetFloat("MoveSpeed", 0.0f);

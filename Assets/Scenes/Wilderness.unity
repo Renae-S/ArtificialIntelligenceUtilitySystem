@@ -3212,7 +3212,7 @@ GameObject:
   - component: {fileID: 491468677}
   - component: {fileID: 491468676}
   m_Layer: 0
-  m_Name: Bar
+  m_Name: Anger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4152,7 +4152,7 @@ GameObject:
   - component: {fileID: 571544491}
   - component: {fileID: 571544490}
   m_Layer: 0
-  m_Name: Bar
+  m_Name: Disgust
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4277,7 +4277,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 
 --- !u!222 &573417389
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4416,6 +4416,22 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 412036a23b8aae44db7b42148e4e5946, type: 2}
   - {fileID: 11400000, guid: ef7a3a5af0722ba4ebb5e596b1c8eda8, type: 2}
   - {fileID: 11400000, guid: 82211ea47b95bfd4dac7b7581bbbb968, type: 2}
+  - {fileID: 11400000, guid: cba06445261baf54497f8a23e43bb04f, type: 2}
+  - {fileID: 11400000, guid: 2729b71dc09f71c4aa834649a48d5b3a, type: 2}
+  - {fileID: 11400000, guid: 9c397932887bc6e42938c712fe726556, type: 2}
+  - {fileID: 11400000, guid: b0e5bd34c2479d7458467aee8891603a, type: 2}
+  - {fileID: 11400000, guid: 619fcb438bf42de478a63361593773e0, type: 2}
+  - {fileID: 11400000, guid: a063850438f2797488577a00e74a4fe7, type: 2}
+  - {fileID: 11400000, guid: 21a896908415c914e9b4a4da0923866d, type: 2}
+  - {fileID: 11400000, guid: 63f47095aa835ef46be304c0557ec6f4, type: 2}
+  - {fileID: 11400000, guid: 8d7512dd14eaa7448a866c211bef4673, type: 2}
+  - {fileID: 11400000, guid: 1e2dd24c9c454b14d891620456a3b2c0, type: 2}
+  - {fileID: 11400000, guid: ad077d4bc07abdc4eac40bd407eef412, type: 2}
+  - {fileID: 11400000, guid: 0c2ca791728eb8f4b957e1abe9778408, type: 2}
+  - {fileID: 11400000, guid: ceab6a9a7951efa44b9004035df0b186, type: 2}
+  - {fileID: 11400000, guid: ad1b5b9bc15eb3948a8874fda19664b0, type: 2}
+  - {fileID: 11400000, guid: 79e4b17c2e3fd2e45917833bd3a8e6a3, type: 2}
+  - {fileID: 11400000, guid: 23087f6f378b33b41b6343a6601e7881, type: 2}
   nBars:
   - {fileID: 847544843}
   - {fileID: 2100822591}
@@ -4432,6 +4448,7 @@ MonoBehaviour:
   - {fileID: 1392750113}
   currentAction: {fileID: 0}
   currentActionText: {fileID: 610737533}
+  currentEmotionText: {fileID: 573417388}
   actionTimerMax: 10
   actionTimer: 0
   targetLight: {fileID: 1769330559}
@@ -4838,7 +4855,7 @@ GameObject:
   - component: {fileID: 660779610}
   - component: {fileID: 660779609}
   m_Layer: 0
-  m_Name: Bar
+  m_Name: Happiness
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7945,7 +7962,7 @@ GameObject:
   - component: {fileID: 1098917960}
   - component: {fileID: 1098917959}
   m_Layer: 0
-  m_Name: Bar
+  m_Name: Fear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9442,7 +9459,7 @@ GameObject:
   - component: {fileID: 1382668244}
   - component: {fileID: 1382668243}
   m_Layer: 0
-  m_Name: Bar
+  m_Name: Sadness
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9531,7 +9548,7 @@ GameObject:
   - component: {fileID: 1392750114}
   - component: {fileID: 1392750113}
   m_Layer: 0
-  m_Name: Bar
+  m_Name: Surprise
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
