@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Useable
   - Agent
+  - Axe
+  - Text
   layers:
   - Default
   - TransparentFX

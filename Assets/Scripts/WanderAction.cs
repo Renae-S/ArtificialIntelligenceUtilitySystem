@@ -49,7 +49,7 @@ namespace UtilityAI
 
                 // Calculate recovery and decrement (need gained in ten seconds)
                 // For every condition of the agent
-                foreach (Condition condition in agent.conditions)
+                foreach (Condition condition in agent.GetConditions())
                 {
                     // If the condition is an action condition
                     if (condition.GetType() == typeof(ActionCondition))
@@ -130,7 +130,7 @@ namespace UtilityAI
                 finalEvaluation += evaluationValue;
             }
 
-            return finalEvaluation;
+            return finalEvaluation - 5;
         }
 
         // Updates the agents movement, needs, animation and destination

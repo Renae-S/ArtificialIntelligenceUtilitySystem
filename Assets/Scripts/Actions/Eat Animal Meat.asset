@@ -12,5 +12,9 @@ MonoBehaviour:
   m_Name: Eat Animal Meat
   m_EditorClassIdentifier: 
   withinRangeOfTarget: 0
-  commitmentToAction: 0
+  commitmentToAction: 1
+  conditions:
+  - {fileID: 11400000, guid: 18986b12387078f40907239e5c33fbd3, type: 2}
+  - {fileID: 11400000, guid: fc3bf48ac1c8cd748a3d8636a945f09b, type: 2}
   animation: Pickup
+  maxSpeed: 0

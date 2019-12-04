@@ -18,7 +18,6 @@ public class BasicAnimalAI : MonoBehaviour {
     {
         nav = GetComponent<NavMeshAgent>();
         target = generatePosition();
-        bobbingFrequency = 1.0f;
         bobbingAmplitude = 0.1f;
         turnOffMovement = false;
     }

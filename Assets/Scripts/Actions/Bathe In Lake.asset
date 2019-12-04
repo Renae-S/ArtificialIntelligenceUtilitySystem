@@ -13,4 +13,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   withinRangeOfTarget: 0
   commitmentToAction: 0
+  conditions:
+  - {fileID: 11400000, guid: 3db898087fcbc2e4db73e1de37a2c5ad, type: 2}
+  - {fileID: 11400000, guid: 82211ea47b95bfd4dac7b7581bbbb968, type: 2}
+  - {fileID: 11400000, guid: ea77ecf391c16b34c86ed304f3fbe9fc, type: 2}
   animation: Idle
+  maxSpeed: 0

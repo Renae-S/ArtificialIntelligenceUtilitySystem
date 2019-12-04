@@ -79,6 +79,10 @@ namespace UtilityAI
         }
 
         // Allows for variable resetting or adjustments to condition made upon exiting the condition
-        public override void Exit(Agent agent) { }
+        public override void Exit(Agent agent)
+        {
+            // Set the action's commitmentToAction to false and returns false
+            action.commitmentToAction = false;
+        }
     }
 }

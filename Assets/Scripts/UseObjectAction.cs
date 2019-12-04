@@ -45,7 +45,7 @@ namespace UtilityAI
                 if (agent.GetNeedValue(need) <= 0)
                 {
                     urgency = 100000;
-                    agent.maxRange = 250;
+                    agent.maxRange = 400;
                 }
 
                 // If the value of the need is full then urgency is set to 0
@@ -58,7 +58,7 @@ namespace UtilityAI
 
                 // Calculate recovery and decrement (need gained in ten seconds)
                 // For every condition of the agent
-                foreach (Condition condition in agent.conditions)
+                foreach (Condition condition in agent.GetConditions())
                 {
                     // If the condition is an action condition
                     if (condition.GetType() == typeof(ActionCondition))
@@ -138,8 +138,12 @@ namespace UtilityAI
                     }
                     // Calculate evaluation value
                     evaluationValue += urgency * (recovery + decrement);
+                    if (urgency == 100000 && evaluationValue < 0)
+                        evaluationValue *= -1;
                 }
                 finalEvaluation += evaluationValue;
+                if (commitmentToAction)
+                    finalEvaluation += 3;
             }
 
             return finalEvaluation;
@@ -150,7 +154,7 @@ namespace UtilityAI
         public override void UpdateAction(Agent agent)
         {
             // If the agent is too far away, move to the target
-            if (Vector3.Distance(agent.transform.position, target.transform.position) > agent.targetUseable.range)
+            if (Vector3.Distance(agent.transform.position, target.transform.position) > agent.GetTargetUseable().range)
             {
                 agent.nav.SetDestination(target.transform.position);
                 agent.targetLight.transform.position = target.transform.position;

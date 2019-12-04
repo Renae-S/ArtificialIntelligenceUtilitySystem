@@ -32,7 +32,8 @@ namespace UtilityAI
         public Dictionary<GameObject, Action> actionsOnUseables;    // A dictionary of all avaliable actions on useable GameObjects
         public Action[] intrinsicActions;                           // An array of all the intrinsic actions
 
-        public Condition[] conditions;                              // An array of all the conditions that can be met
+        public List<ConditionCollection> conditionCollections;      // A list of all the behaviour condition that will apply to this agent
+        protected List<Condition> conditions;                       // An array of all the conditions that can be met
 
         public Image[] nBars;                                       // An array of all the UI need bars
         public Dictionary<string, Image> needBars;                  // A dictionary of all the UI need bars and their names
@@ -44,7 +45,7 @@ namespace UtilityAI
         public Action currentAction;                                // The action we're currently carry out
         public Text currentActionText;                              // The UI text that shows the current action
         public Text currentEmotionText;                             // The UI text that shows the current emotion
-        private float changeInHappiness;                              // The change in happiness value
+        private float changeInHappiness;                            // The change in happiness value
         public float actionTimerMax;                                // The time in seconds between action decisions
         public float actionTimer;                                   // The timer that decreases per frame
         public GameObject targetLight;                              // A light the shines on the target for visual information
@@ -56,8 +57,8 @@ namespace UtilityAI
         public float healthMultiplier;                              // The multiplier value that is multiplied by time between frames with to get the changeInHealth
         public Image healthBar;                                     // The UI health bar image
 
-        public GameObject targetObject;                             // The target GameObject
-        public Useable targetUseable;                               // The target Useable
+        private GameObject targetObject;                            // The target GameObject
+        private Useable targetUseable;                              // The target Useable
         public float maxRange;                                      // The max radius around the agent for finding actions it can do on objects
 
         public NavMeshAgent nav;                                    // The agent's NavMeshAgent component
@@ -67,6 +68,7 @@ namespace UtilityAI
         private void Start()
         {
             actionsOnUseables   = new Dictionary<GameObject, Action>();
+            conditions          = new List<Condition>();
             needBars            = new Dictionary<string, Image>();
             emotionBars         = new Dictionary<string, Image>();
             best                = null;
@@ -78,7 +80,6 @@ namespace UtilityAI
             healthMultiplier    = 0.005f;
             targetObject        = null;
             targetUseable       = null;
-            maxRange            = 200.0f;
             nav                 = GetComponent<NavMeshAgent>();
             animator            = GetComponent<Animator>();
 
@@ -90,9 +91,18 @@ namespace UtilityAI
             for (int i = 0; i < eBars.Length; i++)
                 emotionBars.Add(eBars[i].name, eBars[i]);
 
+            // Set up all action based conditions to Agent
+            FindAllActionConditions();
+
             // For each condition in conditions, call Awake() to initialise condition variables
-            foreach (Condition condition in conditions)
-                condition.Awake();
+            foreach (ConditionCollection collection in conditionCollections)
+            {
+                foreach (Condition condition in collection.conditions)
+                {
+                    conditions.Add(condition);
+                    condition.Awake();
+                }
+            }
 
             for (int i = 0; i < Enum.GetNames(typeof(Needs)).Length; i++)
                 SetNeed(GetNeed(i), 1);
@@ -128,6 +138,9 @@ namespace UtilityAI
                 currentAction.UpdateAction(this);
                 currentActionText.text = currentAction.name;
             }
+
+            if (!currentAction)
+                currentActionText.text = "No Action";
 
             // Update current emotion text
             currentEmotionText.text = GetHighestEmotion();
@@ -237,21 +250,25 @@ namespace UtilityAI
 
             Action bestObjectAction = null;
             Action bestIntrinsicAction = null;
-            float intrinsicValue = 0;
-            float objectValue = 0;
+            float intrinsicValue = -10000;
+            float objectValue = -10000;
 
-            float bestValue = 0;
+            float bestIntrinsicValue = -10000;
+            float bestObjectValue = -10000;
 
             // For every intrisic action of the agent, evaluate it and determine the highest value action and keep it set as the bestIntrinsicAction variable
             foreach (Action intrinsicAction in intrinsicActions)
             {
                 intrinsicValue = intrinsicAction.Evaluate(this);
-                if (intrinsicAction == null || intrinsicValue > bestValue)
+                if (intrinsicAction == null || intrinsicValue > bestIntrinsicValue)
                 {
                     bestIntrinsicAction = intrinsicAction;
-                    bestValue = intrinsicValue;
+                    bestIntrinsicValue = intrinsicValue;
                 }
             }
+
+            if (bestIntrinsicAction == null)
+                bestIntrinsicAction = intrinsicActions[0];
 
             // For every useable action of the agent, evaluate it and determine the highest value action and keep it set as the bestObjectAction variable
             // Set the target object to the object that carries this action
@@ -259,17 +276,17 @@ namespace UtilityAI
             {
                 objectValue = a.Value.Evaluate(this);
                 a.Key.GetComponent<Useable>().updateEvaluationValue(objectValue);
-                if (bestObjectAction == null || objectValue > bestValue)
+                if (bestObjectAction == null || objectValue > bestObjectValue)
                 {
                     bestObjectAction = a.Value;
-                    bestValue = objectValue;
+                    bestObjectValue = objectValue;
                     targetObject = a.Key;
                     targetUseable = targetObject.GetComponent<Useable>();
                 }
             }
 
             // Determine the action with the highest value out of the object and intrinsic actions, and return the action with the higher value
-            return intrinsicValue > objectValue ? bestIntrinsicAction : bestObjectAction;
+            return (bestIntrinsicValue > bestObjectValue ? bestIntrinsicAction : bestObjectAction);
         }
 
         // Checks every condition in the agent and if the condition is true, it updates the need values associated with the condition
@@ -311,6 +328,47 @@ namespace UtilityAI
                 if (NumOfLowNeedBars == 0)
                     changeInHealth += 0.005f * Time.deltaTime;
             }
+        }
+
+        // FindAllActionConditions adds all action-based conditions to the agent's conditions list - should be called once in Start
+        public void FindAllActionConditions()
+        {
+            foreach (Action a in intrinsicActions)
+            {
+                foreach (Condition c in a.conditions)
+                    conditions.Add(c);
+            }
+
+            // Physics overlapsphere and check every useable around the agent
+            Collider[] items = Physics.OverlapSphere(transform.position, 1000);
+
+            // For every collider hit in the agents range
+            foreach (Collider col in items)
+            {
+                // If the GameObject is a useable
+                Useable useable = col.GetComponent<Useable>();
+                if (useable)
+                {
+                    if (col.gameObject.tag == "Useable")
+                    {
+                        foreach (Condition c in useable.action.conditions)
+                            if (!conditions.Contains(c))
+                                conditions.Add(c);
+                    }
+                }
+            }
+        }
+
+        // GetConditions returns the list of conditions that apply to the agent
+        public List<Condition> GetConditions()
+        {
+            return conditions;
+        }
+
+        // GetTargetUseable returns a Useable which is the current targetUseable of the agent
+        public Useable GetTargetUseable()
+        {
+            return targetUseable;
         }
 
         // GetNeedValue takes a string for the need name and returns the corresponding need value

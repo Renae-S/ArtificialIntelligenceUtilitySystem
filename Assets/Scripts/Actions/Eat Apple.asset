@@ -13,4 +13,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   withinRangeOfTarget: 0
   commitmentToAction: 0
+  conditions:
+  - {fileID: 11400000, guid: 1123c8bc9cba0784eaefe97a3f73956f, type: 2}
+  - {fileID: 11400000, guid: 7c67b7842db93584c86383d6bfb10b3a, type: 2}
   animation: Pickup
+  maxSpeed: 0

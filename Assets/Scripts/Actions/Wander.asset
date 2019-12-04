@@ -11,8 +11,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f084b7ccdfea5e45abf7d6725598de7, type: 3}
   m_Name: Wander
   m_EditorClassIdentifier: 
+  withinRangeOfTarget: 1
+  commitmentToAction: 0
+  conditions:
+  - {fileID: 11400000, guid: 9020034c4b468684da2a7c69bfd1edd3, type: 2}
   radius: 100
   timerLimit: 5
-  timer: 0
-  randomDirection: {x: 0, y: 0, z: 0}
-  destinationPos: {x: 0, y: 0, z: 0}
+  timer: 4.0349407
+  randomDirection: {x: 320.75998, y: 16.709515, z: 59.072044}
+  destinationPos: {x: 320.75998, y: 7.2425065, z: 59.072044}

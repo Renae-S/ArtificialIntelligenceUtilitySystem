@@ -13,6 +13,8 @@ namespace UtilityAI
         public bool withinRangeOfTarget;                // Whether the Agent is within the range of the usable or not
         public bool commitmentToAction;                 // Whether the Agent is currently performing this particular action or not
 
+        public List<Condition> conditions;              // The conditions based on the action that affect the Agent
+
         public abstract float Evaluate(Agent agent);    // Evaluates all of the agents needs and calculates the urgency of the need with a float - a high value mean a high importance
                                                         // agent - the agent that has its needs evaluated
         public abstract void UpdateAction(Agent agent); // Updates the agents movement, needs, animation and destination
